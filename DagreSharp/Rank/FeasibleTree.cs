@@ -37,7 +37,7 @@ namespace DagreSharp.Rank
 			// Choose arbitrary node from which to start our tree
 			var start = g.Nodes.First();
 			var size = g.Nodes.Count;
-			t.SetNode(start);
+			t.SetNode(start.Copy());
 
 			var delta = 0;
 			while (TightTree(t, g) < size)
