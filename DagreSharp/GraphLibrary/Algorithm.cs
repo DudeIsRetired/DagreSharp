@@ -97,7 +97,7 @@ namespace DagreSharp.GraphLibrary
 			}
 		}
 
-		private static IList<Node> ForEachRight(IList<Node> array, Action<INode, int, ICollection<Node>> iteratee)
+		private static IList<Node> ForEachRight(IList<Node> array, Action<Node, int, ICollection<Node>> iteratee)
 		{
 			var length = array.Count - 1;
 			while (length >= 0)
@@ -184,7 +184,7 @@ namespace DagreSharp.GraphLibrary
 		{
 			var visited = new Dictionary<string, bool>();
 			var cmpts = new List<List<string>>();
-			var cmpt = new List<string>();
+			List<string> cmpt;
 
 			void dfs(string v)
 			{

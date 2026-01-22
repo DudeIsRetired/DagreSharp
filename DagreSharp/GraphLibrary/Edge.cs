@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DagreSharp.GraphLibrary
 {
-	public class Edge : IEdge
+	public class Edge
 	{
 		public string Id { get; internal set; }
 
@@ -89,7 +89,7 @@ namespace DagreSharp.GraphLibrary
 			return edge;
 		}
 
-		public void CopyFrom(IEdge edge)
+		public void CopyFrom(Edge edge)
 		{
 			Height = edge.Height;
 			Width = edge.Width;

@@ -27,13 +27,13 @@ namespace DagreSharp.GraphLibrary
 
 		private readonly Dictionary<string, List<Node>> _children = new Dictionary<string, List<Node>>();
 
-		public IReadOnlyCollection<INode> Nodes { get => _nodes.Values; }
+		public IReadOnlyCollection<Node> Nodes { get => _nodes.Values; }
 
-		public IReadOnlyCollection<IEdge> Edges { get => _edges.Values; }
+		public IReadOnlyCollection<Edge> Edges { get => _edges.Values; }
 
-		public Action<INode> ConfigureDefaultNode { get; set; }
+		public Action<Node> ConfigureDefaultNode { get; set; }
 
-		public Action<IEdge> ConfigureDefaultEdge { get; set; }
+		public Action<Edge> ConfigureDefaultEdge { get; set; }
 
 		public bool IsDirected { get; }
 
@@ -41,7 +41,7 @@ namespace DagreSharp.GraphLibrary
 
 		public bool IsCompound { get; }
 
-		public IGraphOptions Options { get => OptionsInternal; }
+		public GraphOptions Options { get => OptionsInternal; }
 
 		internal GraphOptions OptionsInternal { get; }
 
@@ -64,7 +64,7 @@ namespace DagreSharp.GraphLibrary
 		 * Gets list of nodes without in-edges.
 		 * Complexity: O(|V|).
 		 */
-		public IReadOnlyCollection<INode> GetSources()
+		public IReadOnlyCollection<Node> GetSources()
 		{
 			return GetSourcesInternal();
 		}
@@ -78,7 +78,7 @@ namespace DagreSharp.GraphLibrary
 		 * Gets list of nodes without out-edges.
 		 * Complexity: O(|V|).
 		 */
-		public IReadOnlyCollection<INode> GetSinks()
+		public IReadOnlyCollection<Node> GetSinks()
 		{
 			return Nodes.Where(v => _outEdges[v.Id].Count == 0).ToList();
 		}
@@ -87,7 +87,7 @@ namespace DagreSharp.GraphLibrary
 		 * Invokes setNode method for each node in names list.
 		 * Complexity: O(|names|).
 		 */
-		public Graph SetNodes(IEnumerable<string> names, Action<INode> configure = null)
+		public Graph SetNodes(IEnumerable<string> names, Action<Node> configure = null)
 		{
 			foreach (var v in names)
 			{
@@ -103,7 +103,7 @@ namespace DagreSharp.GraphLibrary
 		 * created by this call then the default node label will be assigned.
 		 * Complexity: O(1).
 		 */
-		public INode SetNode(string id, Action<INode> configure = null)
+		public Node SetNode(string id, Action<Node> configure = null)
 		{
 			return SetNode(new Node(id), configure);
 		}
@@ -139,12 +139,12 @@ namespace DagreSharp.GraphLibrary
 		 * Gets the label of node with specified name.
 		 * Complexity: O(|V|).
 		 */
-		public INode GetNode(string id)
+		public Node GetNode(string id)
 		{
 			return _nodes[id];
 		}
 
-		public INode FindNode(string id)
+		public Node FindNode(string id)
 		{
 			if (_nodes.ContainsKey(id))
 			{
@@ -282,10 +282,10 @@ namespace DagreSharp.GraphLibrary
 		 * Gets list of direct children of node v.
 		 * Complexity: O(1).
 		 */
-		public IReadOnlyCollection<INode> GetChildren(string id = GRAPH_NODE)
+		public IReadOnlyCollection<Node> GetChildren(string id = GRAPH_NODE)
 		{
 			var children = GetChildrenInternal(id);
-			return children.Cast<INode>().ToList();
+			return children.Cast<Node>().ToList();
 		}
 
 		internal ICollection<Node> GetChildrenInternal(string id = GRAPH_NODE)
@@ -312,9 +312,9 @@ namespace DagreSharp.GraphLibrary
 		 * the graph. Behavior is undefined for undirected graphs - use neighbors instead.
 		 * Complexity: O(|V|).
 		 */
-		public IReadOnlyCollection<INode> GetPredecessors(string id)
+		public IReadOnlyCollection<Node> GetPredecessors(string id)
 		{
-			return _predecessors.TryGetValue(id, out List<Node> values) ? values.Cast<INode>().ToList() : new List<INode>();
+			return _predecessors.TryGetValue(id, out List<Node> values) ? values.Cast<Node>().ToList() : new List<Node>();
 		}
 
 		public List<Node> GetPredecessorsInternal(string id)
@@ -327,9 +327,9 @@ namespace DagreSharp.GraphLibrary
 		 * the graph. Behavior is undefined for undirected graphs - use neighbors instead.
 		 * Complexity: O(|V|).
 		 */
-		public IReadOnlyCollection<INode> GetSuccessors(string id)
+		public IReadOnlyCollection<Node> GetSuccessors(string id)
 		{
-			return _successors.TryGetValue(id, out List<Node> values) ? values.Cast<INode>().ToList() : new List<INode>();
+			return _successors.TryGetValue(id, out List<Node> values) ? values.Cast<Node>().ToList() : new List<Node>();
 		}
 
 		internal List<Node> GetSuccessorsInternal(string id)
@@ -342,7 +342,7 @@ namespace DagreSharp.GraphLibrary
 		 * node v is not in the graph.
 		 * Complexity: O(|V|).
 		 */
-		public IReadOnlyCollection<INode> GetNeighbors(string id)
+		public IReadOnlyCollection<Node> GetNeighbors(string id)
 		{
 			var preds = GetPredecessors(id);
 			var sucs = GetSuccessors(id);
@@ -437,7 +437,7 @@ namespace DagreSharp.GraphLibrary
 		 * of nodes with label provided or default label if no label provided.
 		 * Complexity: O(|nodes|).
 		 */
-		public Graph SetPath(string[] nodes, Action<IEdge> configure = null)
+		public Graph SetPath(string[] nodes, Action<Edge> configure = null)
 		{
 			if (nodes.Length < 2)
 			{
@@ -463,7 +463,7 @@ namespace DagreSharp.GraphLibrary
 			return this;
 		}
 
-		public IEdge SetEdge(string from, string to, string name = null, Action<IEdge> configure = null)
+		public Edge SetEdge(string from, string to, string name = null, Action<Edge> configure = null)
 		{
 			return SetEdgeInternal(from, to, name, configure);
 		}
@@ -521,7 +521,7 @@ namespace DagreSharp.GraphLibrary
 		 * Gets the label for the specified edge.
 		 * Complexity: O(1).
 		 */
-		public IEdge GetEdge(string from, string to, string name = null)
+		public Edge GetEdge(string from, string to, string name = null)
 		{
 			return GetEdgeInternal(from, to, name);
 		}
@@ -537,7 +537,7 @@ namespace DagreSharp.GraphLibrary
 			return _edges[edge.Id];
 		}
 
-		public IEdge FindEdge(string from, string to, string name = null)
+		public Edge FindEdge(string from, string to, string name = null)
 		{
 			return FindEdgeInternal(from, to, name);
 		}
@@ -595,7 +595,7 @@ namespace DagreSharp.GraphLibrary
 		 * coming from node u. Behavior is undefined for undirected graphs - use nodeEdges instead.
 		 * Complexity: O(|E|).
 		 */
-		public IReadOnlyCollection<IEdge> GetInEdges(string nodeId, string filterFromNodeId = null)
+		public IReadOnlyCollection<Edge> GetInEdges(string nodeId, string filterFromNodeId = null)
 		{
 			return GetInEdgesInternal(nodeId, filterFromNodeId);
 		}
@@ -621,7 +621,7 @@ namespace DagreSharp.GraphLibrary
 		 * those point to w. Behavior is undefined for undirected graphs - use nodeEdges instead.
 		 * Complexity: O(|E|).
 		 */
-		public IReadOnlyCollection<IEdge> GetOutEdges(string nodeId, string filterToNodeId = null)
+		public IReadOnlyCollection<Edge> GetOutEdges(string nodeId, string filterToNodeId = null)
 		{
 			return GetOutEdgesInternal(nodeId, filterToNodeId);
 		}
@@ -647,7 +647,7 @@ namespace DagreSharp.GraphLibrary
 		/// down to just those between nodes from and to regardless of direction.
 		/// Complexity: O(|E|).
 		/// </summary>
-		public IReadOnlyCollection<IEdge> GetAllEdges(string nodeId, string filterNodeId = null)
+		public IReadOnlyCollection<Edge> GetAllEdges(string nodeId, string filterNodeId = null)
 		{
 			return GetAllEdgesInternal(nodeId, filterNodeId);
 		}
@@ -680,7 +680,7 @@ namespace DagreSharp.GraphLibrary
 			return _edges.Values;
 		}
 
-		public IReadOnlyCollection<IEdge> GetNodeEdges(string from, string to = null)
+		public IReadOnlyCollection<Edge> GetNodeEdges(string from, string to = null)
 		{
 			var inEdges = GetInEdges(from, to);
 			var outEdges = GetOutEdges(from, to);

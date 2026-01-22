@@ -25,12 +25,12 @@ namespace DagreSharp
 			}
 		}
 
-		private static void SwapWidthHeightOne(INode node)
+		private static void SwapWidthHeightOne(Node node)
 		{
 			(node.Height, node.Width) = (node.Width, node.Height);
 		}
 
-		private static void SwapWidthHeightOne(IEdge edge)
+		private static void SwapWidthHeightOne(Edge edge)
 		{
 			(edge.Height, edge.Width) = (edge.Width, edge.Height);
 		}
@@ -71,12 +71,12 @@ namespace DagreSharp
 			}
 		}
 
-		private static void ReverseYOne(INode node)
+		private static void ReverseYOne(Node node)
 		{
 			node.Y = -node.Y;
 		}
 
-		private static void ReverseYOne(IEdge edge)
+		private static void ReverseYOne(Edge edge)
 		{
 			edge.Y = -edge.Y;
 		}
@@ -107,12 +107,12 @@ namespace DagreSharp
 			}
 		}
 
-		private static void SwapXYOne(INode node)
+		private static void SwapXYOne(Node node)
 		{
 			(node.Y, node.X) = (node.X, node.Y);
 		}
 
-		private static void SwapXYOne(IEdge edge)
+		private static void SwapXYOne(Edge edge)
 		{
 			(edge.Y, edge.X) = (edge.X, edge.Y);
 		}

@@ -7,7 +7,7 @@ namespace DagreSharp.Test
 	{
 		private readonly ITestOutputHelper _output = output;
 
-		private static void AssertNodes(IEnumerable<INode> expected, IEnumerable<INode> actual)
+		private static void AssertNodes(IEnumerable<Node> expected, IEnumerable<Node> actual)
 		{
 			Assert.Equal(expected.Count(), actual.Count());
 
@@ -22,7 +22,7 @@ namespace DagreSharp.Test
 			}
 		}
 
-		private static void AssertEdges(IEnumerable<IEdge> expected, IEnumerable<IEdge> actual)
+		private static void AssertEdges(IEnumerable<Edge> expected, IEnumerable<Edge> actual)
 		{
 			Assert.Equal(expected.Count(), actual.Count());
 
@@ -38,7 +38,7 @@ namespace DagreSharp.Test
 			}
 		}
 
-		private void Print(IEnumerable<INode> nodes, IEnumerable<IEdge> edges)
+		private void Print(IEnumerable<Node> nodes, IEnumerable<Edge> edges)
 		{
 			foreach (var node in nodes)
 			{

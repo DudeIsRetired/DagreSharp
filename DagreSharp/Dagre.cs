@@ -13,34 +13,34 @@ namespace DagreSharp
 
 		private readonly Graph _graph;
 
-		public IGraphOptions Options { get => _graph.Options; }
+		public GraphOptions Options { get => _graph.Options; }
 
-		public IReadOnlyCollection<INode> Nodes => _graph.Nodes;
+		public IReadOnlyCollection<Node> Nodes => _graph.Nodes;
 
-		public IReadOnlyCollection<IEdge> Edges => _graph.Edges;
+		public IReadOnlyCollection<Edge> Edges => _graph.Edges;
 
 		public Dagre(Graph graph)
 		{
 			_graph = graph ?? throw new ArgumentNullException(nameof(graph));
 		}
 
-		public INode SetNode(string id, Action<INode> configure = null)
+		public Node SetNode(string id, Action<Node> configure = null)
 		{
 			return _graph.SetNode(id, configure);
 		}
 
-		public IEdge SetEdge(string from, string to, string name = null, Action<IEdge> configure = null)
+		public Edge SetEdge(string from, string to, string name = null, Action<Edge> configure = null)
 		{
 			return _graph.SetEdge(from, to, name, configure);
 		}
 
-		public Action<INode> ConfigureDefaultNode
+		public Action<Node> ConfigureDefaultNode
 		{
 			get => _graph.ConfigureDefaultNode;
 			set => _graph.ConfigureDefaultNode = value;
 		}
 
-		public Action<IEdge> ConfigureDefaultEdge
+		public Action<Edge> ConfigureDefaultEdge
 		{
 			get => _graph.ConfigureDefaultEdge;
 			set => _graph.ConfigureDefaultEdge = value;

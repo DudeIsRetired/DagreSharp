@@ -35,7 +35,7 @@ namespace DagreSharp
 			return node;
 		}
 
-		public static INode AddBorderNode(Graph g, string prefix, int? rank = null, int? order = null)
+		public static Node AddBorderNode(Graph g, string prefix, int? rank = null, int? order = null)
 		{
 			return AddDummyNode(g, DummyType.Border, prefix, n =>
 			{
@@ -298,7 +298,7 @@ namespace DagreSharp
 		* Finds where a line starting at point ({x, y}) would intersect a rectangle
 		* ({x, y, width, height}) if it were pointing at the rectangle's center.
 		*/
-		public static Point IntersectRect(INode rect, Point point)
+		public static Point IntersectRect(Node rect, Point point)
 		{
 			var x = rect.X;
 			var y = rect.Y;

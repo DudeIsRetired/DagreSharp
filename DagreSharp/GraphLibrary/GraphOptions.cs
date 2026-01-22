@@ -2,7 +2,7 @@
 
 namespace DagreSharp.GraphLibrary
 {
-	public class GraphOptions : IGraphOptions
+	public class GraphOptions
 	{
 		public RankDirection RankDirection { get; set; }
 

@@ -29,7 +29,7 @@ namespace DagreSharp
 			var stack = new HashSet<string>();
 			var visited = new HashSet<string>();
 
-			void dfs(INode node)
+			void dfs(Node node)
 			{
 				if (visited.Contains(node.Id))
 				{

@@ -293,7 +293,7 @@ namespace DagreSharp
 					var ws = neighborFn(v);
 					if (ws.Count > 0)
 					{
-						ws.Sort(Comparer<INode>.Create((a, b) => pos[a.Id] - pos[b.Id]));
+						ws.Sort(Comparer<Node>.Create((a, b) => pos[a.Id] - pos[b.Id]));
 						double mp = (double)(ws.Count - 1) / 2;
 						var il = Math.Ceiling(mp);
 						for (int i = (int)Math.Floor(mp); i <= il; ++i)

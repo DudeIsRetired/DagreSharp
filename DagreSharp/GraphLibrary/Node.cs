@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DagreSharp.GraphLibrary
 {
-	public class Node : INode, IEquatable<Node>, IComparable<Node>
+	public class Node : IEquatable<Node>, IComparable<Node>
 	{
 		public string Id { get; }
 

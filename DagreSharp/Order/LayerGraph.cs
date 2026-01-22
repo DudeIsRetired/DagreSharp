@@ -5,7 +5,7 @@ namespace DagreSharp.Order
 {
 	public static class LayerGraph
 	{
-		public delegate IReadOnlyCollection<IEdge> RelationShipFunc(string v, string u);
+		public delegate IReadOnlyCollection<Edge> RelationShipFunc(string v, string u);
 		/*
 		 * Constructs a graph that can be used to sort a layer of nodes. The graph will
 		 * contain all base and subgraph nodes from the request layer in their original
