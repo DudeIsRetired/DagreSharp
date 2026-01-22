@@ -86,7 +86,7 @@ namespace DagreSharp.Rank
 				visited.Add(node.Id);
 				var rankValues = g.GetOutEdges(node.Id).Select(v =>
 				{
-					var to = g.GetNodeInternal(v.To);
+					var to = g.GetNode(v.To);
 					return DepthFirstSearch(to) - v.MinLength;
 				}).ToList();
 				var rank = rankValues.Count > 0 ? rankValues.Min() : 0;
@@ -95,7 +95,7 @@ namespace DagreSharp.Rank
 				return rank;
 			}
 
-			foreach (var v in g.GetSourcesInternal())
+			foreach (var v in g.GetSources())
 			{
 				DepthFirstSearch(v);
 			}
@@ -107,8 +107,8 @@ namespace DagreSharp.Rank
 		 */
 		public static int Slack(Graph g, Edge e)
 		{
-			var ewNode = g.GetNodeInternal(e.To);
-			var evNode = g.GetNodeInternal(e.From);
+			var ewNode = g.GetNode(e.To);
+			var evNode = g.GetNode(e.From);
 			var ewRank = ewNode.Rank ?? 0;
 			var evRank = evNode.Rank ?? 0;
 

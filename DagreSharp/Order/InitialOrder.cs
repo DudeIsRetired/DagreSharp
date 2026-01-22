@@ -46,7 +46,7 @@ namespace DagreSharp.Order
 		public static List<List<string>> Run(Graph g)
 		{
 			var visited = new HashSet<string>();
-			var simpleNodes = g.GetNodes().Where(n => g.GetChildren(n.Id).Count == 0).ToList();
+			var simpleNodes = g.Nodes.Where(n => g.GetChildren(n.Id).Count == 0).ToList();
 			var maxRank = Util.MaxRank(simpleNodes);
 			List<List<string>> layers = new List<List<string>>();
 
@@ -69,7 +69,7 @@ namespace DagreSharp.Order
 					layers[node.Rank.Value].Add(node.Id);
 				}
 
-				foreach (var succ in g.GetSuccessorsInternal(node.Id))
+				foreach (var succ in g.GetSuccessors(node.Id))
 				{
 					DepthFirstSearch(succ);
 				}

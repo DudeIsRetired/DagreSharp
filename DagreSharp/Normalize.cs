@@ -24,8 +24,8 @@ namespace DagreSharp
 		*/
 		public static void Run(Graph g)
 		{
-			g.OptionsInternal.DummyChains.Clear();
-			var edges = g.GetEdges().ToArray();
+			g.Options.DummyChains.Clear();
+			var edges = g.Edges.ToArray();
 
 			foreach (var edge in edges)
 			{
@@ -36,9 +36,9 @@ namespace DagreSharp
 		private static void NormalizeEdge(Graph g, Edge edge)
 		{
 			var v = edge.From;
-			var vRank = g.GetNodeInternal(v).Rank;
+			var vRank = g.GetNode(v).Rank;
 			var w = edge.To;
-			var wRank = g.GetNodeInternal(w).Rank;
+			var wRank = g.GetNode(w).Rank;
 			var name = edge.Name;
 			var labelRank = edge.LabelRank;
 
@@ -74,7 +74,7 @@ namespace DagreSharp
 
 				if (i == 0)
 				{
-					g.OptionsInternal.DummyChains.Add(dummy);
+					g.Options.DummyChains.Add(dummy);
 				}
 
 				v = dummy.Id;
@@ -85,7 +85,7 @@ namespace DagreSharp
 
 		public static void Undo(Graph g)
 		{
-			foreach (var node in g.OptionsInternal.DummyChains)
+			foreach (var node in g.Options.DummyChains)
 			{
 				if (node.DummyEdge == null)
 				{
@@ -98,7 +98,7 @@ namespace DagreSharp
 
 				while (nd.DummyType != DummyType.None)
 				{
-					var w = g.GetSuccessorsInternal(nd.Id)[0];
+					var w = g.GetSuccessors(nd.Id).First();
 					g.RemoveNode(nd.Id);
 					origLabel.Points.Add(new Point(nd.X, nd.Y));
 

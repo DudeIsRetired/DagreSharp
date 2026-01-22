@@ -41,16 +41,14 @@ namespace DagreSharp.GraphLibrary
 
 		public bool IsCompound { get; }
 
-		public GraphOptions Options { get => OptionsInternal; }
-
-		internal GraphOptions OptionsInternal { get; }
+		public GraphOptions Options { get; }
 
 		public Graph(bool isDirected = true, bool isMultigraph = false, bool isCompound = false)
 		{
 			IsDirected = isDirected;
 			IsMultigraph = isMultigraph;
 			IsCompound = isCompound;
-			OptionsInternal = new GraphOptions();
+			Options = new GraphOptions();
 
 			if (IsCompound)
 			{
@@ -65,11 +63,6 @@ namespace DagreSharp.GraphLibrary
 		 * Complexity: O(|V|).
 		 */
 		public IReadOnlyCollection<Node> GetSources()
-		{
-			return GetSourcesInternal();
-		}
-
-		public IReadOnlyCollection<Node> GetSourcesInternal()
 		{
 			return _nodes.Values.Where(v => _inEdges[v.Id].Count == 0).ToList();
 		}
@@ -154,11 +147,6 @@ namespace DagreSharp.GraphLibrary
 			return null;
 		}
 
-		public Node GetNodeInternal(string id)
-		{
-			return _nodes[id];
-		}
-
 		/**
 		 * Detects whether graph has a node with specified name or not.
 		 */
@@ -181,7 +169,7 @@ namespace DagreSharp.GraphLibrary
 			{
 				RemoveFromParentsChildList(id);
 				_parents.Remove(id);
-				foreach (var child in GetChildren(id))
+				foreach (var child in GetChildren(id).ToList())
 				{
 					SetParent(child.Id);
 				}
@@ -284,12 +272,6 @@ namespace DagreSharp.GraphLibrary
 		 */
 		public IReadOnlyCollection<Node> GetChildren(string id = GRAPH_NODE)
 		{
-			var children = GetChildrenInternal(id);
-			return children.Cast<Node>().ToList();
-		}
-
-		internal ICollection<Node> GetChildrenInternal(string id = GRAPH_NODE)
-		{
 			if (IsCompound)
 			{
 				if (!_children.ContainsKey(id))
@@ -312,12 +294,7 @@ namespace DagreSharp.GraphLibrary
 		 * the graph. Behavior is undefined for undirected graphs - use neighbors instead.
 		 * Complexity: O(|V|).
 		 */
-		public IReadOnlyCollection<Node> GetPredecessors(string id)
-		{
-			return _predecessors.TryGetValue(id, out List<Node> values) ? values.Cast<Node>().ToList() : new List<Node>();
-		}
-
-		public List<Node> GetPredecessorsInternal(string id)
+		public List<Node> GetPredecessors(string id)
 		{
 			return _predecessors.TryGetValue(id, out List<Node> value) ? value : new List<Node>();
 		}
@@ -327,12 +304,7 @@ namespace DagreSharp.GraphLibrary
 		 * the graph. Behavior is undefined for undirected graphs - use neighbors instead.
 		 * Complexity: O(|V|).
 		 */
-		public IReadOnlyCollection<Node> GetSuccessors(string id)
-		{
-			return _successors.TryGetValue(id, out List<Node> values) ? values.Cast<Node>().ToList() : new List<Node>();
-		}
-
-		internal List<Node> GetSuccessorsInternal(string id)
+		public List<Node> GetSuccessors(string id)
 		{
 			return _successors.TryGetValue(id, out List<Node> values) ? values : new List<Node>();
 		}
@@ -342,18 +314,10 @@ namespace DagreSharp.GraphLibrary
 		 * node v is not in the graph.
 		 * Complexity: O(|V|).
 		 */
-		public IReadOnlyCollection<Node> GetNeighbors(string id)
+		public List<Node> GetNeighbors(string id)
 		{
 			var preds = GetPredecessors(id);
 			var sucs = GetSuccessors(id);
-
-			return preds.Union(sucs).ToList();
-		}
-
-		internal List<Node> GetNeighborsInternal(string id)
-		{
-			var preds = GetPredecessorsInternal(id);
-			var sucs = GetSuccessorsInternal(id);
 
 			return preds.Union(sucs).ToList();
 		}
@@ -373,7 +337,7 @@ namespace DagreSharp.GraphLibrary
 		public Graph FilterNodes(Func<string, bool> filter)
 		{
 			var copy = new Graph(IsDirected, IsMultigraph, IsCompound);
-			copy.OptionsInternal.CopyFrom(OptionsInternal);
+			copy.Options.CopyFrom(Options);
 
 			foreach (var v in _nodes.Keys)
 			{
@@ -465,11 +429,6 @@ namespace DagreSharp.GraphLibrary
 
 		public Edge SetEdge(string from, string to, string name = null, Action<Edge> configure = null)
 		{
-			return SetEdgeInternal(from, to, name, configure);
-		}
-
-		internal Edge SetEdgeInternal(string from, string to, string name = null, Action<Edge> configure = null)
-		{
 			if (!IsDirected && string.Compare(from, to, StringComparison.OrdinalIgnoreCase) > 0)
 			{
 				(to, from) = (from, to);
@@ -523,11 +482,6 @@ namespace DagreSharp.GraphLibrary
 		 */
 		public Edge GetEdge(string from, string to, string name = null)
 		{
-			return GetEdgeInternal(from, to, name);
-		}
-
-		public Edge GetEdgeInternal(string from, string to, string name = null)
-		{
 			var e = EdgeArgsToId(from, to, name);
 			return _edges[e];
 		}
@@ -538,11 +492,6 @@ namespace DagreSharp.GraphLibrary
 		}
 
 		public Edge FindEdge(string from, string to, string name = null)
-		{
-			return FindEdgeInternal(from, to, name);
-		}
-
-		internal Edge FindEdgeInternal(string from, string to, string name = null)
 		{
 			var e = EdgeArgsToId(from, to, name);
 			return _edges.TryGetValue(e, out Edge value) ? value : null;
@@ -597,11 +546,6 @@ namespace DagreSharp.GraphLibrary
 		 */
 		public IReadOnlyCollection<Edge> GetInEdges(string nodeId, string filterFromNodeId = null)
 		{
-			return GetInEdgesInternal(nodeId, filterFromNodeId);
-		}
-
-		internal List<Edge> GetInEdgesInternal(string nodeId, string filterFromNodeId = null)
-		{
 			var edges = new List<Edge>();
 
 			if (_inEdges.TryGetValue(nodeId, out List<Edge> value))
@@ -622,11 +566,6 @@ namespace DagreSharp.GraphLibrary
 		 * Complexity: O(|E|).
 		 */
 		public IReadOnlyCollection<Edge> GetOutEdges(string nodeId, string filterToNodeId = null)
-		{
-			return GetOutEdgesInternal(nodeId, filterToNodeId);
-		}
-
-		internal List<Edge> GetOutEdgesInternal(string nodeId, string filterToNodeId = null)
 		{
 			var edges = new List<Edge>();
 
@@ -649,13 +588,8 @@ namespace DagreSharp.GraphLibrary
 		/// </summary>
 		public IReadOnlyCollection<Edge> GetAllEdges(string nodeId, string filterNodeId = null)
 		{
-			return GetAllEdgesInternal(nodeId, filterNodeId);
-		}
-
-		public IReadOnlyCollection<Edge> GetAllEdgesInternal(string nodeId, string filterNodeId = null)
-		{
-			var edges = GetInEdgesInternal(nodeId, filterNodeId);
-			edges.AddRange(GetOutEdgesInternal(nodeId, filterNodeId));
+			var edges = new List<Edge>(GetInEdges(nodeId, filterNodeId));
+			edges.AddRange(GetOutEdges(nodeId, filterNodeId));
 
 			return edges;
 		}
@@ -668,16 +602,6 @@ namespace DagreSharp.GraphLibrary
 			}
 
 			return from + EDGE_KEY_DELIM + to + EDGE_KEY_DELIM + (name ?? DEFAULT_EDGE_NAME);
-		}
-
-		internal ICollection<Node> GetNodes()
-		{
-			return _nodes.Values;
-		}
-
-		internal ICollection<Edge> GetEdges()
-		{
-			return _edges.Values;
 		}
 
 		public IReadOnlyCollection<Edge> GetNodeEdges(string from, string to = null)

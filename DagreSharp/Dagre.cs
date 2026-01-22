@@ -96,16 +96,16 @@ namespace DagreSharp
 		private Graph BuildLayoutGraph()
 		{
 			var g = new Graph(true, true, true);
-			g.OptionsInternal.CopyFrom(_graph.OptionsInternal);
+			g.Options.CopyFrom(_graph.Options);
 
-			foreach (var node in _graph.GetNodes())
+			foreach (var node in _graph.Nodes)
 			{
 				g.SetNode(node);
 				g.SetParent(node.Id, _graph.FindParent(node.Id));
 
 			}
 
-			foreach (var e in _graph.GetEdges())
+			foreach (var e in _graph.Edges)
 			{
 				var newEdge = e.Copy();
 				g.SetEdge(newEdge);
@@ -147,11 +147,11 @@ namespace DagreSharp
 
 		private static void RemoveSelfEdges(Graph g)
 		{
-			foreach (var e in g.GetEdges())
+			foreach (var e in g.Edges)
 			{
 				if (e.From == e.To)
 				{
-					var node = g.GetNodeInternal(e.From);
+					var node = g.GetNode(e.From);
 					node.SelfEdges.Clear();
 					node.SelfEdges.Add(new SelfEdge(e));
 					g.RemoveEdge(e);
@@ -167,12 +167,12 @@ namespace DagreSharp
 		 */
 		private static void InjectEdgeLabelProxies(Graph g)
 		{
-			foreach (var edge in g.GetEdges())
+			foreach (var edge in g.Edges)
 			{
 				if (edge.Width != 0 && edge.Height != 0)
 				{
-					var v = g.GetNodeInternal(edge.From);
-					var w = g.GetNodeInternal(edge.To);
+					var v = g.GetNode(edge.From);
+					var w = g.GetNode(edge.To);
 
 					Util.AddDummyNode(g, DummyType.EdgeProxy, "_ep", n =>
 					{
@@ -187,12 +187,12 @@ namespace DagreSharp
 		{
 			var maxRank = 0;
 
-			foreach (var node in g.GetNodes())
+			foreach (var node in g.Nodes)
 			{
 				if (!string.IsNullOrEmpty(node.BorderTop) && !string.IsNullOrEmpty(node.BorderBottom))
 				{
-					node.MinRank = g.GetNodeInternal(node.BorderTop).Rank;
-					node.MaxRank = g.GetNodeInternal(node.BorderBottom).Rank;
+					node.MinRank = g.GetNode(node.BorderTop).Rank;
+					node.MaxRank = g.GetNode(node.BorderBottom).Rank;
 
 					if (node.MaxRank.HasValue)
 					{
@@ -201,12 +201,12 @@ namespace DagreSharp
 				}
 			}
 
-			g.OptionsInternal.MaxRank = maxRank;
+			g.Options.MaxRank = maxRank;
 		}
 
 		private static void RemoveEdgeLabelProxies(Graph g)
 		{
-			foreach (var node in g.GetNodes())
+			foreach (var node in g.Nodes)
 			{
 				if (node.DummyType == DummyType.EdgeProxy)
 				{
@@ -236,7 +236,7 @@ namespace DagreSharp
 				for (int i = 0; i < layer.Count; i++)
 				{
 					var v = layer[i];
-					var node = g.GetNodeInternal(v);
+					var node = g.GetNode(v);
 					node.Order = i + orderShift;
 
 					foreach (var selfEdge in node.SelfEdges)
@@ -290,7 +290,7 @@ namespace DagreSharp
 
 		private static void PositionSelfEdges(Graph g)
 		{
-			foreach (var node in g.GetNodes())
+			foreach (var node in g.Nodes)
 			{
 				if (node.DummyType == DummyType.SelfEdge)
 				{
@@ -321,7 +321,7 @@ namespace DagreSharp
 
 		private static void RemoveBorderNodes(Graph g)
 		{
-			foreach (var node in g.GetNodes())
+			foreach (var node in g.Nodes)
 			{
 				if (g.GetChildren(node.Id).Count > 0)
 				{
@@ -349,7 +349,7 @@ namespace DagreSharp
 				}
 			}
 
-			foreach (var node in g.GetNodes())
+			foreach (var node in g.Nodes)
 			{
 				if (node.DummyType == DummyType.Border)
 				{
@@ -389,7 +389,7 @@ namespace DagreSharp
 			var maxX = 0.0;
 			var minY = double.MaxValue;
 			var maxY = 0.0;
-			var options = g.OptionsInternal;
+			var options = g.Options;
 			var marginX = options.MarginX;
 			var marginY = options.MarginY;
 
@@ -429,7 +429,7 @@ namespace DagreSharp
 				node.Y -= minY;
 			}
 
-			foreach (var edge in g.GetEdges())
+			foreach (var edge in g.Edges)
 			{
 				var points = new List<Point>();
 				foreach (var point in edge.Points)
@@ -457,7 +457,7 @@ namespace DagreSharp
 
 		private static void AssignNodeIntersects(Graph g)
 		{
-			foreach (var edge in g.GetEdges())
+			foreach (var edge in g.Edges)
 			{
 				var nodeV = g.GetNode(edge.From);
 				var nodeW = g.GetNode(edge.To);
@@ -481,7 +481,7 @@ namespace DagreSharp
 
 		private static void ReversePointsForReversedEdges(Graph g)
 		{
-			foreach (var edge in g.GetEdges())
+			foreach (var edge in g.Edges)
 			{
 				if (edge.IsReversed)
 				{
@@ -498,9 +498,9 @@ namespace DagreSharp
 		*/
 		private void UpdateInputGraph(Graph layoutGraph)
 		{
-			foreach (var inputNode in _graph.GetNodes())
+			foreach (var inputNode in _graph.Nodes)
 			{
-				var layoutLabel = layoutGraph.GetNodeInternal(inputNode.Id);
+				var layoutLabel = layoutGraph.GetNode(inputNode.Id);
 
 				if (inputNode != null)
 				{
@@ -516,7 +516,7 @@ namespace DagreSharp
 				}
 			}
 
-			foreach (var inputEdge in _graph.GetEdges())
+			foreach (var inputEdge in _graph.Edges)
 			{
 				var layoutLabel = layoutGraph.GetEdge(inputEdge);
 
@@ -530,8 +530,8 @@ namespace DagreSharp
 				}
 			}
 
-			_graph.OptionsInternal.Width = layoutGraph.OptionsInternal.Width;
-			_graph.OptionsInternal.Height = layoutGraph.OptionsInternal.Height;
+			_graph.Options.Width = layoutGraph.Options.Width;
+			_graph.Options.Height = layoutGraph.Options.Height;
 		}
 	}
 }

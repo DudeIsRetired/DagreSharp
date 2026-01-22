@@ -74,7 +74,7 @@ namespace DagreSharp.Order
 			}
 
 
-			foreach (var node in g.GetNodes())
+			foreach (var node in g.Nodes)
 			{
 				if (node.Rank.HasValue)
 				{
@@ -107,7 +107,7 @@ namespace DagreSharp.Order
 				for (var i = 0; i < layer.Count; i++)
 				{
 					var v = layer[i];
-					g.GetNodeInternal(v).Order = i;
+					g.GetNode(v).Order = i;
 				}
 			}
 		}
@@ -117,13 +117,13 @@ namespace DagreSharp.Order
 			var cg = new Graph();
 			foreach (var lg in layerGraphs)
 			{
-				var root = lg.OptionsInternal.Root ?? throw new InvalidOperationException("root is null");
+				var root = lg.Options.Root ?? throw new InvalidOperationException("root is null");
 				var sorted = SubGraph.Sort(lg, root, cg, biasRight);
 
 				for (int i = 0; i < sorted.Vs.Count; i++)
 				{
 					var item = sorted.Vs[i];
-					var node = lg.GetNodeInternal(item);
+					var node = lg.GetNode(item);
 					node.Order = i;
 				}
 

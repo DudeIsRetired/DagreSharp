@@ -22,7 +22,7 @@ namespace DagreSharp.Order
 
 				foreach (var e in inV)
 				{
-					var nodeU = g.GetNodeInternal(e.From);
+					var nodeU = g.GetNode(e.From);
 					bcr.Sum += (e.Weight * nodeU.Order);
 					bcr.Weight += e.Weight;
 				}

@@ -53,9 +53,9 @@ namespace DagreSharp
 		public static Graph AsNonCompoundGraph(Graph g)
 		{
 			var simplified = new Graph(true, g.IsMultigraph);
-			simplified.OptionsInternal.CopyFrom(g.OptionsInternal);
+			simplified.Options.CopyFrom(g.Options);
 
-			foreach (var node in g.GetNodes())
+			foreach (var node in g.Nodes)
 			{
 				if (g.GetChildren(node.Id).Count == 0)
 				{
@@ -63,7 +63,7 @@ namespace DagreSharp
 				}
 			}
 
-			foreach (var e in g.GetEdges())
+			foreach (var e in g.Edges)
 			{
 				simplified.SetEdge(e);
 			}
@@ -78,14 +78,14 @@ namespace DagreSharp
 		public static Graph Simplify(Graph g)
 		{
 			var simplified = new Graph();
-			simplified.OptionsInternal.CopyFrom(g.OptionsInternal);
+			simplified.Options.CopyFrom(g.Options);
 
-			foreach (var node in g.GetNodes())
+			foreach (var node in g.Nodes)
 			{
 				simplified.SetNode(node);
 			}
 
-			foreach (var edge in g.GetEdges())
+			foreach (var edge in g.Edges)
 			{
 				var simpleEdge = simplified.FindEdge(edge.From, edge.To);
 				simplified.SetEdge(edge.From, edge.To, null, e =>
@@ -109,7 +109,7 @@ namespace DagreSharp
 		public static void RemoveEmptyRanks(Graph g)
 		{
 			// Ranks may not start at 0, so we need to offset them
-			var rankNodes = g.GetNodes().Where(n => n.Rank.HasValue).OrderBy(n => n.Rank).ToList();
+			var rankNodes = g.Nodes.Where(n => n.Rank.HasValue).OrderBy(n => n.Rank).ToList();
 			var offset = rankNodes.Select(n => n.Rank.Value).Min();
 			var maxRank = int.MinValue;
 
@@ -134,7 +134,7 @@ namespace DagreSharp
 			}
 
 			var delta = 0;
-			var nodeRankFactor = g.OptionsInternal.NodeRankFactor;
+			var nodeRankFactor = g.Options.NodeRankFactor;
 
 			for (int i = 0; i <= maxRank; i++)
 			{
@@ -162,9 +162,9 @@ namespace DagreSharp
 		*/
 		public static void NormalizeRanks(Graph g)
 		{
-			var min = g.GetNodes().Select(n => n.Rank).Min();
+			var min = g.Nodes.Select(n => n.Rank).Min();
 
-			foreach (var node in g.GetNodes())
+			foreach (var node in g.Nodes)
 			{
 				node.Rank -= min;
 			}
@@ -172,7 +172,7 @@ namespace DagreSharp
 
 		public static int MaxRank(Graph g)
 		{
-			return MaxRank(g.GetNodes());
+			return MaxRank(g.Nodes);
 		}
 
 		public static int MaxRank(IEnumerable<Node> nodes)
@@ -258,7 +258,7 @@ namespace DagreSharp
 				layering.Add(new List<string>());
 			}
 
-			foreach (var node in g.GetNodes().OrderBy(n => n.Order))
+			foreach (var node in g.Nodes.OrderBy(n => n.Order))
 			{
 				if (node.Rank.HasValue)
 				{

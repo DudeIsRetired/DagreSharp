@@ -37,10 +37,10 @@ namespace DagreSharp
 			var nodeSep = 2 * height + 1;
 			var weight = 0;
 
-			g.OptionsInternal.NestingRoot = root.Id;
+			g.Options.NestingRoot = root.Id;
 
 			// Multiply minlen by nodeSep to align nodes on non-border ranks.
-			foreach (var edge in g.GetEdges())
+			foreach (var edge in g.Edges)
 			{
 				edge.MinLength *= nodeSep;
 				weight += edge.Weight;
@@ -50,7 +50,7 @@ namespace DagreSharp
 			weight += 1;
 
 			// Create border nodes and link them up
-			var children = g.GetChildrenInternal().ToList();
+			var children = g.GetChildren().ToList();
 			foreach (var child in children)
 			{
 				DepthFirstSearch(g, root.Id, nodeSep, weight, height, depths, child);
@@ -58,12 +58,12 @@ namespace DagreSharp
 
 			// Save the multiplier for node layers for later removal of empty border
 			// layers.
-			g.OptionsInternal.NodeRankFactor = nodeSep;
+			g.Options.NodeRankFactor = nodeSep;
 		}
 
 		private static void DepthFirstSearch(Graph g, string root, int nodeSep, int weight, int height, Dictionary<string, int> depths, Node node)
 		{
-			var children = g.GetChildrenInternal(node.Id).ToList();
+			var children = g.GetChildren(node.Id).ToList();
 			if (children.Count == 0)
 			{
 				if (node.Id != root)
@@ -95,14 +95,14 @@ namespace DagreSharp
 				var thisWeight = !string.IsNullOrEmpty(child.BorderTop) ? weight : 2 * weight;
 				var minlen = childTop != childBottom ? 1 : height - depths[node.Id] + 1;
 
-				g.SetEdgeInternal(top.Id, childTop, null, e =>
+				g.SetEdge(top.Id, childTop, null, e =>
 				{
 					e.Weight = thisWeight;
 					e.MinLength = minlen;
 					e.IsNestingEdge = true;
 				});
 
-				g.SetEdgeInternal(childBottom, bottom.Id, null, e =>
+				g.SetEdge(childBottom, bottom.Id, null, e =>
 				{
 					e.Weight = thisWeight;
 					e.MinLength = minlen;
@@ -126,7 +126,7 @@ namespace DagreSharp
 
 			void DepthFirstSearch(string nodeId, int depth)
 			{
-				var children = g.GetChildrenInternal(nodeId);
+				var children = g.GetChildren(nodeId);
 
 				foreach (var child in children)
 				{
@@ -136,7 +136,7 @@ namespace DagreSharp
 				depths.Add(nodeId, depth);
 			}
 
-			foreach (var child in g.GetChildrenInternal())
+			foreach (var child in g.GetChildren())
 			{
 				DepthFirstSearch(child.Id, 1);
 			}
@@ -146,14 +146,14 @@ namespace DagreSharp
 
 		public static void Cleanup(Graph g)
 		{
-			var options = g.OptionsInternal;
+			var options = g.Options;
 			if (!string.IsNullOrEmpty(options.NestingRoot))
 			{
 				g.RemoveNode(options.NestingRoot);
 				options.NestingRoot = null;
 			}
 			
-			var nestingEdges = g.GetEdges().Where(e => e.IsNestingEdge).ToArray();
+			var nestingEdges = g.Edges.Where(e => e.IsNestingEdge).ToArray();
 
 			foreach (var e in nestingEdges)
 			{

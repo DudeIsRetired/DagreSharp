@@ -35,7 +35,7 @@ namespace DagreSharp.Rank
 			var t = new Graph(false);
 
 			// Choose arbitrary node from which to start our tree
-			var start = g.GetNodes().First();
+			var start = g.Nodes.First();
 			var size = g.Nodes.Count;
 			t.SetNode(start);
 
@@ -63,7 +63,7 @@ namespace DagreSharp.Rank
 		{
 			void dfs(string v)
 			{
-				var nodeEdges = g.GetAllEdgesInternal(v);
+				var nodeEdges = g.GetAllEdges(v);
 				foreach (var e in nodeEdges)
 				{
 					var edgeV = e.From;
@@ -96,7 +96,7 @@ namespace DagreSharp.Rank
 			var minSlack = int.MaxValue;
 			Edge minEdge = null;
 
-			foreach (var edge in g.GetEdges())
+			foreach (var edge in g.Edges)
 			{
 				var edgeSlack = int.MaxValue;
 
@@ -117,7 +117,7 @@ namespace DagreSharp.Rank
 
 		private static void ShiftRanks(Graph t, Graph g, int delta)
 		{
-			foreach (var node in t.GetNodes())
+			foreach (var node in t.Nodes)
 			{
 				g.GetNode(node.Id).Rank += delta;
 			}

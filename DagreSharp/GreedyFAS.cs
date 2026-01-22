@@ -82,7 +82,7 @@ namespace DagreSharp
 			foreach (var edge in g.GetInEdges(entry.Id))
 			{
 				var weight = edge.Weight;
-				var uEntry = g.GetNodeInternal(edge.From);
+				var uEntry = g.GetNode(edge.From);
 
 				if (collectPredecessors)
 				{
@@ -98,7 +98,7 @@ namespace DagreSharp
 			{
 				var weight = edge.Weight;
 				var w = edge.To;
-				var wEntry = g.GetNodeInternal(w);
+				var wEntry = g.GetNode(w);
 				wEntry.In -= weight;
 				AssignBucket(buckets, zeroIdx, wEntry);
 			}
@@ -114,7 +114,7 @@ namespace DagreSharp
 			var maxIn = 0;
 			var maxOut = 0;
 
-			foreach (var node in g.GetNodes())
+			foreach (var node in g.Nodes)
 			{
 				fasGraph.SetNode(node, n =>
 				{
@@ -125,14 +125,14 @@ namespace DagreSharp
 
 			// Aggregate weights on nodes, but also sum the weights across multi-edges
 			// into a single edge for the fasGraph.
-			foreach (var edge in g.GetEdges())
+			foreach (var edge in g.Edges)
 			{
 				var prevWeight = 0;
 				var weight = weightFn(edge);
 				var edgeWeight = prevWeight + weight;
 				fasGraph.SetEdge(edge.From, edge.To, edge.Name, e => { e.Weight = edgeWeight; });
-				maxOut = Math.Max(maxOut, fasGraph.GetNodeInternal(edge.From).Out += weight);
-				maxIn = Math.Max(maxIn, fasGraph.GetNodeInternal(edge.To).In += weight);
+				maxOut = Math.Max(maxOut, fasGraph.GetNode(edge.From).Out += weight);
+				maxIn = Math.Max(maxIn, fasGraph.GetNode(edge.To).In += weight);
 			}
 
 			var limit = maxOut + maxIn + 3;
@@ -144,7 +144,7 @@ namespace DagreSharp
 				buckets.Add(new Queue<Node>());
 			}
 			
-			foreach (var node in fasGraph.GetNodes())
+			foreach (var node in fasGraph.Nodes)
 			{
 				AssignBucket(buckets, zeroIdx, node);
 			}

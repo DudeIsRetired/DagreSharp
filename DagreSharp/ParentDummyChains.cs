@@ -1,6 +1,7 @@
 ﻿using DagreSharp.GraphLibrary;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DagreSharp
 {
@@ -17,7 +18,7 @@ namespace DagreSharp
 		{
 			var postorderNums = PostOrder(g);
 
-			foreach (var node in g.OptionsInternal.DummyChains)
+			foreach (var node in g.Options.DummyChains)
 			{
 				if (node.DummyEdge == null)
 				{
@@ -37,7 +38,7 @@ namespace DagreSharp
 				{
 					if (ascending)
 					{
-						while (pathV != lca && !string.IsNullOrEmpty(pathV) && g.GetNodeInternal(pathV).MaxRank < nd.Rank)
+						while (pathV != lca && !string.IsNullOrEmpty(pathV) && g.GetNode(pathV).MaxRank < nd.Rank)
 						{
 							pathIdx++;
 							pathV = path[pathIdx];
@@ -51,7 +52,7 @@ namespace DagreSharp
 
 					if (!ascending)
 					{
-						while (pathIdx < path.Count - 1 && g.GetNodeInternal(path[pathIdx + 1]).MinRank <= nd.Rank)
+						while (pathIdx < path.Count - 1 && g.GetNode(path[pathIdx + 1]).MinRank <= nd.Rank)
 						{
 							pathIdx++;
 						}
@@ -60,7 +61,7 @@ namespace DagreSharp
 					}
 
 					g.SetParent(nd.Id, pathV);
-					nd = g.GetSuccessorsInternal(nd.Id)[0];
+					nd = g.GetSuccessors(nd.Id).First();
 				}
 			}
 		}

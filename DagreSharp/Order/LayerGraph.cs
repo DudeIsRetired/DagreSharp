@@ -40,12 +40,12 @@ namespace DagreSharp.Order
 		{
 			if (nodesWithRank == null)
 			{
-				nodesWithRank = g.GetNodes();
+				nodesWithRank = g.Nodes;
 			}
 
 			var root = CreateRootNode(g);
 			var result = new Graph(true, false, true);
-			result.OptionsInternal.Root = root;
+			result.Options.Root = root;
 			//result.ConfigureDefaultNode = n => g.GetNode(n.Id);
 
 			foreach (var node in nodesWithRank)
@@ -67,7 +67,7 @@ namespace DagreSharp.Order
 
 						if (!result.HasNode(u))
 						{
-							var uNode = g.GetNodeInternal(u);
+							var uNode = g.GetNode(u);
 							result.SetNode(uNode);
 						}
 

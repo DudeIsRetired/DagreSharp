@@ -62,7 +62,7 @@ namespace DagreSharp.Rank
 		{
 			if (root == null)
 			{
-				root = tree.GetNodes().First();
+				root = tree.Nodes.First();
 			}
 			
 			DfsAssignLowLim(tree, new HashSet<string>(), 1, root);
@@ -71,10 +71,10 @@ namespace DagreSharp.Rank
 		private static int DfsAssignLowLim(Graph tree, HashSet<string> visited, int nextLim, Node node, Node parent = null)
 		{
 			var low = nextLim;
-			var targetNode = tree.GetNodeInternal(node.Id);
+			var targetNode = tree.GetNode(node.Id);
 			visited.Add(targetNode.Id);
 
-			foreach (var w in tree.GetNeighborsInternal(targetNode.Id))
+			foreach (var w in tree.GetNeighbors(targetNode.Id))
 			{
 				if (!visited.Contains(w.Id))
 				{
@@ -94,7 +94,7 @@ namespace DagreSharp.Rank
 		*/
 		public static void InitCutValues(Graph t, Graph g)
 		{
-			var vs = Algorithm.PostOrder(t, t.GetNodes().ToList());
+			var vs = Algorithm.PostOrder(t, t.Nodes.ToList());
 			vs = vs.GetRange(0, vs.Count - 1);
 
 			foreach (var v in vs)
@@ -105,12 +105,12 @@ namespace DagreSharp.Rank
 
 		private static void AssignCutValue(Graph t, Graph g, string child)
 		{
-			var childLab = t.GetNodeInternal(child);
+			var childLab = t.GetNode(child);
 			var parent = childLab.Parent;
 			
 			if (parent != null)
 			{
-				t.GetEdgeInternal(child, parent.Id).CutValue = CalcCutValue(t, g, child);
+				t.GetEdge(child, parent.Id).CutValue = CalcCutValue(t, g, child);
 			}
 		}
 
@@ -120,7 +120,7 @@ namespace DagreSharp.Rank
 		*/
 		public static int CalcCutValue(Graph t, Graph g, string child)
 		{
-			var childLab = t.GetNodeInternal(child);
+			var childLab = t.GetNode(child);
 			var parent = childLab.Parent ?? throw new InvalidOperationException("Child has no parent!");
 
 			// True if the child is on the tail end of the edge in the directed graph
@@ -149,7 +149,7 @@ namespace DagreSharp.Rank
 					cutValue += pointsToHead ? otherWeight : -otherWeight;
 					if (IsTreeEdge(t, child, other))
 					{
-						var otherCutValue = t.GetEdgeInternal(child, other).CutValue;
+						var otherCutValue = t.GetEdge(child, other).CutValue;
 						cutValue += pointsToHead ? -otherCutValue : otherCutValue;
 					}
 				}
@@ -168,7 +168,7 @@ namespace DagreSharp.Rank
 
 		public static Edge LeaveEdge(Graph tree)
 		{
-			return tree.GetEdges().FirstOrDefault(e => e.CutValue < 0);
+			return tree.Edges.FirstOrDefault(e => e.CutValue < 0);
 		}
 
 		public static Edge EnterEdge(Graph t, Graph g, Edge edge)
@@ -185,8 +185,8 @@ namespace DagreSharp.Rank
 				w = edge.From;
 			}
 
-			var vLabel = t.GetNodeInternal(v);
-			var wLabel = t.GetNodeInternal(w);
+			var vLabel = t.GetNode(v);
+			var wLabel = t.GetNode(w);
 			var tailLabel = vLabel;
 			var flip = false;
 
@@ -198,7 +198,7 @@ namespace DagreSharp.Rank
 				flip = true;
 			}
 
-			var candidates = g.GetEdges().Where(e => flip == IsDescendant(t.GetNodeInternal(e.From), tailLabel) && flip != IsDescendant(t.GetNodeInternal(e.To), tailLabel));
+			var candidates = g.Edges.Where(e => flip == IsDescendant(t.GetNode(e.From), tailLabel) && flip != IsDescendant(t.GetNode(e.To), tailLabel));
 			Edge enterEdge = null;
 
 			foreach (var candidate in candidates)
@@ -245,14 +245,14 @@ namespace DagreSharp.Rank
 
 		private static void UpdateRanks(Graph t, Graph g)
 		{
-			var root = t.GetNodes().First(n => g.GetNodeInternal(n.Id).Parent == null);
+			var root = t.Nodes.First(n => g.GetNode(n.Id).Parent == null);
 			var vs = Algorithm.PreOrder(t, new[] { root });
 			vs = vs.GetRange(1, vs.Count - 1);
 
 			foreach (var v in vs)
 			{
-				var parent = t.GetNodeInternal(v).Parent ?? throw new InvalidOperationException("Cannot find parent from original Graph!");
-				parent = g.GetNodeInternal(parent.Id);	// Note! parent from Graph g!! Had to dig for this bug
+				var parent = t.GetNode(v).Parent ?? throw new InvalidOperationException("Cannot find parent from original Graph!");
+				parent = g.GetNode(parent.Id);	// Note! parent from Graph g!! Had to dig for this bug
 				var edge = g.FindEdge(v, parent.Id);
 				var flipped = false;
 
@@ -262,7 +262,7 @@ namespace DagreSharp.Rank
 					flipped = true;
 				}
 
-				g.GetNodeInternal(v).Rank = parent.Rank + (flipped ? edge.MinLength : -edge.MinLength);
+				g.GetNode(v).Rank = parent.Rank + (flipped ? edge.MinLength : -edge.MinLength);
 			}
 		}
 	}

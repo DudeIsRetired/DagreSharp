@@ -82,12 +82,12 @@ namespace DagreSharp.Order
 			{
 				result.Vs.Insert(0, bl);
 				result.Vs.Add(br);
-				var blPredecessors = g.GetPredecessorsInternal(bl);
+				var blPredecessors = g.GetPredecessors(bl);
 
 				if (blPredecessors.Count > 0)
 				{
 					var blPred = blPredecessors.First();
-					var brPred = g.GetPredecessorsInternal(br).First();
+					var brPred = g.GetPredecessors(br).First();
 
 					if (result.BaryCenter == 0)
 					{

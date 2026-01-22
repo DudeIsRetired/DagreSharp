@@ -56,12 +56,12 @@ namespace DagreSharp
 				}
 
 				adjustedLayering = layering;
-				neighborFn = g.GetPredecessorsInternal;
+				neighborFn = g.GetPredecessors;
 
 				if (alignment == GraphAlignment.DownLeft || alignment == GraphAlignment.DownRight)
 				{
 					adjustedLayering = layering.Select(x => x.ToList()).Reverse().ToList();
-					neighborFn = g.GetSuccessorsInternal;
+					neighborFn = g.GetSuccessors;
 				}
 
 				if (alignment == GraphAlignment.UpRight || alignment == GraphAlignment.DownRight)
@@ -133,12 +133,12 @@ namespace DagreSharp
 					{
 						foreach (var scanNode in layer.GetRange(scanPos, i + 1 - scanPos))
 						{
-							foreach (var pred in g.GetPredecessorsInternal(scanNode))
+							foreach (var pred in g.GetPredecessors(scanNode))
 							{
 								var uPos = pred.Order;
 
 								if ((uPos < k0 || k1 < uPos) &&
-									!(pred.DummyType != DummyType.None && g.GetNodeInternal(scanNode).DummyType != DummyType.None))
+									!(pred.DummyType != DummyType.None && g.GetNode(scanNode).DummyType != DummyType.None))
 								{
 									AddConflict(conflicts, pred.Id, scanNode);
 								}
@@ -164,9 +164,9 @@ namespace DagreSharp
 
 		private static Node FindOtherInnerSegmentNode(Graph g, string v)
 		{
-			if (g.GetNodeInternal(v).DummyType != DummyType.None)
+			if (g.GetNode(v).DummyType != DummyType.None)
 			{
-				return g.GetPredecessorsInternal(v).FirstOrDefault(u => u.DummyType != DummyType.None);
+				return g.GetPredecessors(v).FirstOrDefault(u => u.DummyType != DummyType.None);
 			}
 
 			return null;
@@ -203,9 +203,9 @@ namespace DagreSharp
 				{
 					var v = south[i];
 
-					if (g.GetNodeInternal(v).DummyType != DummyType.None)
+					if (g.GetNode(v).DummyType != DummyType.None)
 					{
-						foreach (var uNode in g.GetPredecessorsInternal(v))
+						foreach (var uNode in g.GetPredecessors(v))
 						{
 							if (uNode.DummyType != DummyType.None && (uNode.Order < prevNorthBorder || uNode.Order > nextNorthBorder))
 							{
@@ -225,9 +225,9 @@ namespace DagreSharp
 				for (int southLookahead = 0; southLookahead < south.Count; southLookahead++)
 				{
 					var v = south[southLookahead];
-					if (g.GetNodeInternal(v).DummyType == DummyType.Border)
+					if (g.GetNode(v).DummyType == DummyType.Border)
 					{
-						var predecessors = g.GetPredecessorsInternal(v);
+						var predecessors = g.GetPredecessors(v);
 						if (predecessors.Count > 0)
 						{
 							nextNorthPos = predecessors.First().Order;
@@ -336,7 +336,7 @@ namespace DagreSharp
 
 			void Iterate(Action<Node> setXsFunc, Func<string, ICollection<Node>> nextNodesFunc)
 			{
-				var stack = new Stack<Node>(blockG.GetNodes());
+				var stack = new Stack<Node>(blockG.Nodes);
 				var elem = stack.Pop();
 				var visited = new HashSet<string>();
 
@@ -366,7 +366,7 @@ namespace DagreSharp
 			{
 				var acc = double.MinValue;
 
-				foreach (var item in blockG.GetInEdgesInternal(node.Id))
+				foreach (var item in blockG.GetInEdges(node.Id))
 				{
 					var value = xs[item.From] + item.NodeX;
 
@@ -391,7 +391,7 @@ namespace DagreSharp
 			{
 				var min = double.MaxValue;
 
-				foreach (var item in blockG.GetOutEdgesInternal(node.Id))
+				foreach (var item in blockG.GetOutEdges(node.Id))
 				{
 					var value = xs[item.To] - item.NodeX;
 
@@ -407,8 +407,8 @@ namespace DagreSharp
 				}
 			}
 
-			Iterate(pass1, blockG.GetPredecessorsInternal);
-			Iterate(pass2, blockG.GetSuccessorsInternal);
+			Iterate(pass1, blockG.GetPredecessors);
+			Iterate(pass2, blockG.GetSuccessors);
 
 			// Assign x coordinates to all nodes
 			foreach (var v in align.Keys)
@@ -437,11 +437,11 @@ namespace DagreSharp
 					if (!string.IsNullOrEmpty(u))
 					{
 						var uRoot = root[u];
-						var prevMaxEdge = blockGraph.FindEdgeInternal(uRoot, vRoot);
+						var prevMaxEdge = blockGraph.FindEdge(uRoot, vRoot);
 						var prevMax = prevMaxEdge == null ? 0 : prevMaxEdge.NodeX;
 						var value = Math.Max(sepFn(g, v, u), prevMax);
 
-						blockGraph.SetEdgeInternal(uRoot, vRoot, null, e => { e.NodeX = value; });
+						blockGraph.SetEdge(uRoot, vRoot, null, e => { e.NodeX = value; });
 					}
 
 					u = v;
@@ -454,8 +454,8 @@ namespace DagreSharp
 		private static Func<Graph, string, string, double> Sep(int nodeSep, int edgeSep, bool reverseSep)
 		{
 			return (g, v, w) => {
-				var vNode = g.GetNodeInternal(v);
-				var wNode = g.GetNodeInternal(w);
+				var vNode = g.GetNode(v);
+				var wNode = g.GetNode(w);
 				var sum = 0.0;
 				var delta = 0.0;
 

@@ -223,7 +223,7 @@ namespace DagreSharp.Test
 			var layering = Util.BuildLayerMatrix(g);
 
 			var conflicts = new Dictionary<string, Dictionary<string, bool>>();
-			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessorsInternal);
+			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessors);
 
 			Assert.Equal(2, result.Root.Count);
 			Assert.True(result.Root.ContainsKey("a"));
@@ -248,7 +248,7 @@ namespace DagreSharp.Test
 			var layering = Util.BuildLayerMatrix(g);
 
 			var conflicts = new Dictionary<string, Dictionary<string, bool>>();
-			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessorsInternal);
+			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessors);
 
 			Assert.Equal(2, result.Root.Count);
 			Assert.True(result.Root.ContainsKey("a"));
@@ -275,7 +275,7 @@ namespace DagreSharp.Test
 			var layering = Util.BuildLayerMatrix(g);
 
 			var conflicts = new Dictionary<string, Dictionary<string, bool>>();
-			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessorsInternal);
+			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessors);
 
 			Assert.Equal(3, result.Root.Count);
 			Assert.True(result.Root.ContainsKey("a"));
@@ -310,7 +310,7 @@ namespace DagreSharp.Test
 			var layering = Util.BuildLayerMatrix(g);
 
 			var conflicts = new Dictionary<string, Dictionary<string, bool>>();
-			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessorsInternal);
+			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessors);
 
 			Assert.Equal(3, result.Root.Count);
 			Assert.True(result.Root.ContainsKey("z"));
@@ -342,7 +342,7 @@ namespace DagreSharp.Test
 
 			var conflicts = new Dictionary<string, Dictionary<string, bool>>();
 			BrandesKopf.AddConflict(conflicts, "a", "c");
-			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessorsInternal);
+			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessors);
 
 			Assert.Equal(3, result.Root.Count);
 			Assert.True(result.Root.ContainsKey("a"));
@@ -375,7 +375,7 @@ namespace DagreSharp.Test
 			var layering = Util.BuildLayerMatrix(g);
 
 			var conflicts = new Dictionary<string, Dictionary<string, bool>>();
-			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessorsInternal);
+			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessors);
 
 			// c will align with b, so d will not be able to align with a, because
 			// (a,d) and (c,b) cross.
@@ -414,7 +414,7 @@ namespace DagreSharp.Test
 			var layering = Util.BuildLayerMatrix(g);
 
 			var conflicts = new Dictionary<string, Dictionary<string, bool>>();
-			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessorsInternal);
+			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessors);
 
 			Assert.Equal(4, result.Root.Count);
 			Assert.True(result.Root.ContainsKey("a"));
@@ -450,7 +450,7 @@ namespace DagreSharp.Test
 			var layering = Util.BuildLayerMatrix(g);
 
 			var conflicts = new Dictionary<string, Dictionary<string, bool>>();
-			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessorsInternal);
+			var result = BrandesKopf.VerticalAlign(layering, conflicts, g.GetPredecessors);
 
 			Assert.Equal(4, result.Root.Count);
 			Assert.True(result.Root.ContainsKey("a"));

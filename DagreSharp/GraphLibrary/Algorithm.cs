@@ -28,11 +28,11 @@ namespace DagreSharp.GraphLibrary
 
 			if (g.IsDirected)
 			{
-				navigation = v => g.GetSuccessorsInternal(v);
+				navigation = v => g.GetSuccessors(v);
 			}
 			else
 			{
-				navigation = v => g.GetNeighborsInternal(v);
+				navigation = v => g.GetNeighbors(v);
 			}
 
 			OrderFunc orderFunc = null;

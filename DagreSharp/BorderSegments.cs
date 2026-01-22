@@ -11,7 +11,7 @@ namespace DagreSharp
 		{
 			void DepthFirstSearch(Node node)
 			{
-				var children = g.GetChildrenInternal(node.Id);
+				var children = g.GetChildren(node.Id);
 
 				foreach (var child in children)
 				{
@@ -31,7 +31,7 @@ namespace DagreSharp
 				}
 			}
 
-			var childList = g.GetChildrenInternal().ToList();
+			var childList = g.GetChildren().ToList();
 			foreach (var child in childList)
 			{
 				DepthFirstSearch(child);

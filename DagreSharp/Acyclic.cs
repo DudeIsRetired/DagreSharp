@@ -14,7 +14,7 @@ namespace DagreSharp
 
 			foreach (var edge in fas) {
 				g.RemoveEdge(edge);
-				g.SetEdgeInternal(edge.To, edge.From, Util.UniqueId("rev"), e =>
+				g.SetEdge(edge.To, edge.From, Util.UniqueId("rev"), e =>
 				{
 					e.CopyFrom(edge);
 					e.ForwardName = edge.Name;
@@ -39,7 +39,7 @@ namespace DagreSharp
 				visited.Add(node.Id);
 				stack.Add(node.Id);
 
-				foreach(var e in g.GetOutEdgesInternal(node.Id))
+				foreach(var e in g.GetOutEdges(node.Id))
 				{
 					if (stack.Contains(e.To))
 					{
@@ -65,7 +65,7 @@ namespace DagreSharp
 
 		public static void Undo(Graph g)
 		{
-			foreach (var edge in g.GetEdges().ToList())
+			foreach (var edge in g.Edges.ToList())
 			{
 				if (edge.IsReversed)
 				{
