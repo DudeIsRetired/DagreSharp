@@ -46,7 +46,7 @@ namespace DagreSharp
 			var conflicts = type1Conflicts;
 			var xss = new Dictionary<GraphAlignment, Dictionary<string, double>>();
 			var adjustedLayering = new List<List<string>>();
-			Func<string, ICollection<Node>> neighborFn;
+			Func<string, List<Node>> neighborFn;
 
 			foreach (GraphAlignment alignment in Enum.GetValues(typeof(GraphAlignment)))
 			{
@@ -265,7 +265,7 @@ namespace DagreSharp
 		* we're trying to form a block with, we also ignore that possibility - our
 		* blocks would be split in that scenario.
 		*/
-		public static VerticalAlignment VerticalAlign(List<List<string>> layering, Dictionary<string, Dictionary<string, bool>> conflicts, Func<string, ICollection<Node>> neighborFn)
+		public static VerticalAlignment VerticalAlign(List<List<string>> layering, Dictionary<string, Dictionary<string, bool>> conflicts, Func<string, List<Node>> neighborFn)
 		{
 			var root = new Dictionary<string, string>();
 			var align = new Dictionary<string, string>();
@@ -290,7 +290,7 @@ namespace DagreSharp
 				var prevIdx = -1;
 				foreach (var v in layer)
 				{
-					var ws = neighborFn(v).ToList();
+					var ws = neighborFn(v);
 					if (ws.Count > 0)
 					{
 						ws.Sort(Comparer<Node>.Create((a, b) => pos[a.Id] - pos[b.Id]));

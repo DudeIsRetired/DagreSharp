@@ -1,4 +1,14 @@
 ﻿using DagreSharp.GraphLibrary;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Resources;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using System.Linq;
+using System.Reflection.Emit;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DagreSharp.Test
 {
@@ -602,12 +612,9 @@ namespace DagreSharp.Test
 			var g = new Graph();
 			g.SetNode("a");
 			g.SetNode("b");
-
-			var children = g.GetChildren();
-
-			Assert.Equal(2, children.Count);
-			Assert.Contains(children, n => n.Id == "a");
-			Assert.Contains(children, n => n.Id == "b");
+			Assert.Equal(2, g.GetChildren().Count);
+			Assert.Contains(g.GetChildren(), n => n.Id == "a");
+			Assert.Contains(g.GetChildren(), n => n.Id == "b");
 		}
 
 		[Fact]

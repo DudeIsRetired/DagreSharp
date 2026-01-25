@@ -55,12 +55,6 @@ namespace DagreSharp.GraphLibrary
 
 		public Dictionary<int, string> BorderRight { get; } = new Dictionary<int, string>();
 
-		public List<Node> Children { get; } = new List<Node>();
-
-		public List<Node> Predecessors { get; } = new List<Node>();
-
-		public List<Node> Successors { get; } = new List<Node>();
-
 		public Node(string id)
 		{
 			if (string.IsNullOrEmpty(id))
