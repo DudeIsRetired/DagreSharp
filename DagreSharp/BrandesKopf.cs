@@ -18,32 +18,7 @@ namespace DagreSharp
 		{
 			var layering = Util.BuildLayerMatrix(g);
 
-			var type1Conflicts = FindType1Conflicts(g, layering);
-			var type2Conflicts = FindType2Conflicts(g, layering);
-
-			foreach (var t2 in type2Conflicts)
-			{
-				if (!type1Conflicts.TryGetValue(t2.Key, out Dictionary<string, bool> t1))
-				{
-					type1Conflicts.Add(t2.Key, t2.Value);
-				}
-				else
-				{
-					foreach (var item in t2.Value)
-					{
-						if (t1.ContainsKey(item.Key))
-						{
-							t1[item.Key] = item.Value;
-						}
-						else
-						{
-							t1.Add(item.Key, item.Value);
-						}
-					}
-				}
-			}
-
-			var conflicts = type1Conflicts;
+			var conflicts = FindConflicts(g, layering);
 			var xss = new Dictionary<GraphAlignment, Dictionary<string, double>>();
 			var adjustedLayering = new List<List<string>>();
 			Func<string, ICollection<Node>> neighborFn;
@@ -91,6 +66,37 @@ namespace DagreSharp
 			var smallestWidth = FindSmallestWidthAlignment(g, xss);
 			AlignCoordinates(xss, smallestWidth);
 			return Balance(xss, g.Options.Aligment);
+		}
+
+		private static Dictionary<string, Dictionary<string, bool>> FindConflicts(Graph g, List<List<string>> layering)
+		{
+			var type1Conflicts = FindType1Conflicts(g, layering);
+			var type2Conflicts = FindType2Conflicts(g, layering);
+
+			foreach (var t2 in type2Conflicts)
+			{
+				if (!type1Conflicts.TryGetValue(t2.Key, out Dictionary<string, bool> t1))
+				{
+					type1Conflicts.Add(t2.Key, t2.Value);
+				}
+				else
+				{
+					foreach (var item in t2.Value)
+					{
+						if (t1.ContainsKey(item.Key))
+						{
+							t1[item.Key] = item.Value;
+						}
+						else
+						{
+							t1.Add(item.Key, item.Value);
+						}
+					}
+				}
+			}
+
+			var conflicts = type1Conflicts;
+			return conflicts;
 		}
 
 		/*
