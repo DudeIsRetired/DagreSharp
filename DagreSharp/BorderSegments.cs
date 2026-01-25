@@ -43,20 +43,19 @@ namespace DagreSharp
 			var property = prop();
 			var prevRank = rank - 1;
 			var prev = property.TryGetValue(prevRank, out string value) ? value : null;
-			var curr = Util.AddDummyNode(g, DummyType.Border, prefix, n =>
-			{
-				n.Width = 0;
-				n.Height = 0;
-				n.Rank = rank;
-				n.BorderType = propName;
-			});
+			var curr = Util.AddDummyNode(g, DummyType.Border, prefix);
+			curr.Width = 0;
+			curr.Height = 0;
+			curr.Rank = rank;
+			curr.BorderType = propName;
 
 			property[rank] = curr.Id;
 			g.SetParent(curr.Id, sg);
 
 			if (!string.IsNullOrEmpty(prev))
 			{
-				g.SetEdge(prev, curr.Id, null, e => { e.Weight = 1; });
+				var e = g.SetEdge(prev, curr.Id);//, null, e => { e.Weight = 1; });
+				e.Weight = 1;
 			}
 		}
 	}

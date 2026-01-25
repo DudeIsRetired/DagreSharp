@@ -22,32 +22,29 @@ namespace DagreSharp
 		/*
 		* Adds a dummy node to the graph and return v.
 		*/
-		public static Node AddDummyNode(Graph g, DummyType type, string name, Action<Node> configure = null)
+		public static Node AddDummyNode(Graph g, DummyType type, string name)
 		{
 			var v = UniqueId(name);
 
-			var node = g.SetNode(new Node(v), n =>
-			{
-				n.DummyType = type;
-				configure?.Invoke(n);
-			});
+			var node = g.SetNode(v);
+			node.DummyType = type;
 
 			return node;
 		}
 
 		public static Node AddBorderNode(Graph g, string prefix, int? rank = null, int? order = null)
 		{
-			return AddDummyNode(g, DummyType.Border, prefix, n =>
-			{
-				n.Width = 0;
-				n.Height = 0;
+			var node = AddDummyNode(g, DummyType.Border, prefix);
+			node.Width = 0;
+			node.Height = 0;
 
-				if (rank.HasValue && order.HasValue)
-				{
-					n.Rank = rank.Value;
-					n.Order = order.Value;
-				}
-			});
+			if (rank.HasValue && order.HasValue)
+			{
+				node.Rank = rank.Value;
+				node.Order = order.Value;
+			}
+
+			return node;
 		}
 
 		public static Graph AsNonCompoundGraph(Graph g)
@@ -88,19 +85,17 @@ namespace DagreSharp
 			foreach (var edge in g.Edges)
 			{
 				var simpleEdge = simplified.FindEdge(edge.From, edge.To);
-				simplified.SetEdge(edge.From, edge.To, null, e =>
+				var e = simplified.SetEdge(edge.From, edge.To);	//, null, e =>
+				if (simpleEdge != null)
 				{
-					if (simpleEdge != null)
-					{
-						e.Weight = simpleEdge.Weight + edge.Weight;
-						e.MinLength = Math.Max(simpleEdge.MinLength, edge.MinLength);
-					}
-					else
-					{
-						e.Weight = edge.Weight;
-						e.MinLength = Math.Max(1, edge.MinLength);
-					}
-				});
+					e.Weight = simpleEdge.Weight + edge.Weight;
+					e.MinLength = Math.Max(simpleEdge.MinLength, edge.MinLength);
+				}
+				else
+				{
+					e.Weight = edge.Weight;
+					e.MinLength = Math.Max(1, edge.MinLength);
+				}
 			}
 
 			return simplified;

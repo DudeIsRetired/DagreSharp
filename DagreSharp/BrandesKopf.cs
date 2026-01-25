@@ -114,7 +114,7 @@ namespace DagreSharp
 		{
 			var conflicts = new Dictionary<string, Dictionary<string, bool>>();
 
-			List<string> visitLayer(List<string> previousLayer, List<string> layer)
+			List<string> VisitLayer(List<string> previousLayer, List<string> layer)
 			{
 				// last visited node in the previous layer that is incident on an inner segment.
 				var k0 = 0;
@@ -156,7 +156,7 @@ namespace DagreSharp
 
 			for (int i = 1; i < layering.Count; i++)
 			{
-				prevLayer = visitLayer(prevLayer, layering[i]);
+				prevLayer = VisitLayer(prevLayer, layering[i]);
 			}
 
 			return conflicts;
@@ -216,7 +216,7 @@ namespace DagreSharp
 				}
 			}
 
-			object visitLayer(List<string> north, List<string> south)
+			List<string> VisitLayer(List<string> north, List<string> south)
 			{
 				var prevNorthPos = -1;
 				var nextNorthPos = 0;
@@ -249,7 +249,7 @@ namespace DagreSharp
 				for (int i = 1; i < layering.Count; i++)
 				{
 					var layer = layering[i];
-					visitLayer(northList, layer);
+					VisitLayer(northList, layer);
 					northList = layer;
 				}
 			}
@@ -441,7 +441,8 @@ namespace DagreSharp
 						var prevMax = prevMaxEdge == null ? 0 : prevMaxEdge.NodeX;
 						var value = Math.Max(sepFn(g, v, u), prevMax);
 
-						blockGraph.SetEdge(uRoot, vRoot, null, e => { e.NodeX = value; });
+						var e = blockGraph.SetEdge(uRoot, vRoot);	//, null, e => { e.NodeX = value; });
+						e.NodeX = value;
 					}
 
 					u = v;

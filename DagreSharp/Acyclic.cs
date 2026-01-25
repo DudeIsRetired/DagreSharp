@@ -14,12 +14,10 @@ namespace DagreSharp
 
 			foreach (var edge in fas) {
 				g.RemoveEdge(edge);
-				g.SetEdge(edge.To, edge.From, Util.UniqueId("rev"), e =>
-				{
-					e.CopyFrom(edge);
-					e.ForwardName = edge.Name;
-					e.IsReversed = true;
-				});
+				var e = g.SetEdge(edge.To, edge.From, Util.UniqueId("rev"));
+				e.CopyFrom(edge);
+				e.ForwardName = edge.Name;
+				e.IsReversed = true;
 			}
 		}
 
@@ -74,7 +72,8 @@ namespace DagreSharp
 					var forwardName = edge.ForwardName;
 					edge.IsReversed = false;
 					edge.ForwardName = string.Empty;
-					g.SetEdge(edge.To, edge.From, null, e => { e.CopyFrom(edge); });
+					var e = g.SetEdge(edge.To, edge.From);//, null, e => { e.CopyFrom(edge); });
+					e.CopyFrom(edge);
 				}
 			}
 		}

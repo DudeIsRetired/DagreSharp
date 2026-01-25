@@ -116,11 +116,9 @@ namespace DagreSharp
 
 			foreach (var node in g.Nodes)
 			{
-				fasGraph.SetNode(node, n =>
-				{
-					n.In = 0;
-					n.Out = 0;
-				});
+				var n = fasGraph.SetNode(node);
+				n.In = 0;
+				n.Out = 0;
 			}
 
 			// Aggregate weights on nodes, but also sum the weights across multi-edges
@@ -130,7 +128,8 @@ namespace DagreSharp
 				var prevWeight = 0;
 				var weight = weightFn(edge);
 				var edgeWeight = prevWeight + weight;
-				fasGraph.SetEdge(edge.From, edge.To, edge.Name, e => { e.Weight = edgeWeight; });
+				var e = fasGraph.SetEdge(edge.From, edge.To, edge.Name);    //, e => { e.Weight = edgeWeight; });
+				e.Weight = edgeWeight;
 				maxOut = Math.Max(maxOut, fasGraph.GetNode(edge.From).Out += weight);
 				maxIn = Math.Max(maxIn, fasGraph.GetNode(edge.To).In += weight);
 			}

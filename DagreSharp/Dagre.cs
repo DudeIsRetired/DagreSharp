@@ -174,11 +174,9 @@ namespace DagreSharp
 					var v = g.GetNode(edge.From);
 					var w = g.GetNode(edge.To);
 
-					Util.AddDummyNode(g, DummyType.EdgeProxy, "_ep", n =>
-					{
-						n.Rank = (w.Rank - v.Rank) / 2 + v.Rank;
-						n.DummyEdge = edge;
-					});
+					var node = Util.AddDummyNode(g, DummyType.EdgeProxy, "_ep");
+					node.Rank = (w.Rank - v.Rank) / 2 + v.Rank;
+					node.DummyEdge = edge;
 				}
 			}
 		}
@@ -241,16 +239,15 @@ namespace DagreSharp
 
 					foreach (var selfEdge in node.SelfEdges)
 					{
-						Util.AddDummyNode(g, DummyType.SelfEdge, "_se", n =>
-						{
-							n.Width = selfEdge.Edge.Width;
-							n.Height = selfEdge.Edge.Height;
-							n.Rank = node.Rank;
-							n.Order = i + (++orderShift);
-							n.DummyEdge = selfEdge.Edge;
-							n.Name = selfEdge.Edge.From;
-						});
+						var n = Util.AddDummyNode(g, DummyType.SelfEdge, "_se");
+						n.Width = selfEdge.Edge.Width;
+						n.Height = selfEdge.Edge.Height;
+						n.Rank = node.Rank;
+						n.Order = i + (++orderShift);
+						n.DummyEdge = selfEdge.Edge;
+						n.Name = selfEdge.Edge.From;
 					}
+
 					node.SelfEdges.Clear();
 				}
 			}

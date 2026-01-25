@@ -54,23 +54,22 @@ namespace DagreSharp
 			{
 				edge.Points.Clear();
 
-				var dummy = Util.AddDummyNode(g, DummyType.Edge, "_d", n =>
+				var dummy = Util.AddDummyNode(g, DummyType.Edge, "_d");
+				dummy.Width = 0;
+				dummy.Height = 0;
+				dummy.Rank = vRank;
+				dummy.DummyEdge = edge;
+
+				if (vRank == labelRank)
 				{
-					n.Width = 0;
-					n.Height = 0;
-					n.Rank = vRank;
-					n.DummyEdge = edge;
+					dummy.Width = edge.Width;
+					dummy.Height = edge.Height;
+					dummy.LabelPosition = edge.LabelPosition;
+					dummy.DummyType = DummyType.EdgeLabel;
+				}
 
-					if (vRank == labelRank)
-					{
-						n.Width = edge.Width;
-						n.Height = edge.Height;
-						n.LabelPosition = edge.LabelPosition;
-						n.DummyType = DummyType.EdgeLabel;
-					}
-				});
-
-				g.SetEdge(v, dummy.Id, name, x => { x.Weight = edge.Weight; });
+				var e = g.SetEdge(v, dummy.Id, name);	//, x => { x.Weight = edge.Weight; });
+				e.Weight = edge.Weight;
 
 				if (i == 0)
 				{

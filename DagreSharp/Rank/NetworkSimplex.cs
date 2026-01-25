@@ -235,7 +235,7 @@ namespace DagreSharp.Rank
 
 			if (enterEdge != null)
 			{
-				t.SetEdge(enterEdge.From, enterEdge.To, null);
+				t.SetEdge(enterEdge.From, enterEdge.To);
 			}
 
 			InitLowLimValues(t);

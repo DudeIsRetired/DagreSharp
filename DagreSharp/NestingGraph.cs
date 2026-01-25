@@ -64,15 +64,15 @@ namespace DagreSharp
 		private static void DepthFirstSearch(Graph g, string root, int nodeSep, int weight, int height, Dictionary<string, int> depths, Node node)
 		{
 			var children = g.GetChildren(node.Id).ToList();
+			Edge e;
+
 			if (children.Count == 0)
 			{
 				if (node.Id != root)
 				{
-					g.SetEdge(root, node.Id, null, e =>
-					{
-						e.Weight = 0;
-						e.MinLength = nodeSep;
-					});
+					e = g.SetEdge(root, node.Id);	//, null, e =>
+					e.Weight = 0;
+					e.MinLength = nodeSep;
 				}
 
 				return;
@@ -95,28 +95,22 @@ namespace DagreSharp
 				var thisWeight = !string.IsNullOrEmpty(child.BorderTop) ? weight : 2 * weight;
 				var minlen = childTop != childBottom ? 1 : height - depths[node.Id] + 1;
 
-				g.SetEdge(top.Id, childTop, null, e =>
-				{
-					e.Weight = thisWeight;
-					e.MinLength = minlen;
-					e.IsNestingEdge = true;
-				});
+				e = g.SetEdge(top.Id, childTop);	//, null, e =>
+				e.Weight = thisWeight;
+				e.MinLength = minlen;
+				e.IsNestingEdge = true;
 
-				g.SetEdge(childBottom, bottom.Id, null, e =>
-				{
-					e.Weight = thisWeight;
-					e.MinLength = minlen;
-					e.IsNestingEdge = true;
-				});
+				e = g.SetEdge(childBottom, bottom.Id);	//, null, e =>
+				e.Weight = thisWeight;
+				e.MinLength = minlen;
+				e.IsNestingEdge = true;
 			}
 
 			if (!g.HasParent(node.Id))
 			{
-				g.SetEdge(root, top.Id, null, e =>
-				{
-					e.Weight = 0;
-					e.MinLength = height + depths[node.Id];
-				});
+				e = g.SetEdge(root, top.Id);	//, null, e =>
+				e.Weight = 0;
+				e.MinLength = height + depths[node.Id];
 			}
 		}
 

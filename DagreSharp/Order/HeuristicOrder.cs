@@ -157,7 +157,7 @@ namespace DagreSharp.Order
 					}
 					if (prevChild != null && prevChild != child)
 					{
-						cg.SetEdge(prevChild, child, null);
+						cg.SetEdge(prevChild, child);
 						break;
 					}
 					child = parent;

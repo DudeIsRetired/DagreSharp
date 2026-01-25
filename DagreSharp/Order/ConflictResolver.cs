@@ -77,32 +77,26 @@ namespace DagreSharp.Order
 		{
 			var entries = new List<MappedEntry>();
 
-			Action<MappedEntry> handleIn(MappedEntry vEntry)
+			void HandleIn(MappedEntry vEntry, MappedEntry uEntry)
 			{
-				return uEntry =>
+				if (uEntry.IsMerged)
 				{
-					if (uEntry.IsMerged)
-					{
-						return;
-					}
+					return;
+				}
 
-					if (!uEntry.BaryCenter.HasValue || !vEntry.BaryCenter.HasValue || uEntry.BaryCenter >= vEntry.BaryCenter)
-					{
-						MergeEntries(vEntry, uEntry);
-					}
-				};
+				if (!uEntry.BaryCenter.HasValue || !vEntry.BaryCenter.HasValue || uEntry.BaryCenter >= vEntry.BaryCenter)
+				{
+					MergeEntries(vEntry, uEntry);
+				}
 			}
 
-			Action<MappedEntry> handleOut(MappedEntry vEntry)
+			void HandleOut(MappedEntry vEntry, MappedEntry wEntry)
 			{
-				return wEntry =>
+				wEntry.In.Add(vEntry);
+				if (--wEntry.InDegree == 0)
 				{
-					wEntry.In.Add(vEntry);
-					if (--wEntry.InDegree == 0)
-					{
-						sourceSet.Push(wEntry);
-					}
-				};
+					sourceSet.Push(wEntry);
+				}
 			}
 
 			while (sourceSet.Count > 0)
@@ -113,15 +107,12 @@ namespace DagreSharp.Order
 
 				foreach (var me in entry.In)
 				{
-					var action = handleIn(entry);
-					action(me);
-
+					HandleIn(entry, me);
 				}
 
 				foreach (var me in entry.Out)
 				{
-					var action = handleOut(entry);
-					action(me);
+					HandleOut(entry, me);
 				}
 			}
 

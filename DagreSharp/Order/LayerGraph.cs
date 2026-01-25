@@ -71,16 +71,15 @@ namespace DagreSharp.Order
 							result.SetNode(uNode);
 						}
 
-						result.SetEdge(u, node.Id, null, x => { x.Weight = e.Weight + weight; });
+						var x = result.SetEdge(u, node.Id);	//, null, x => { x.Weight = e.Weight + weight; });
+						x.Weight = e.Weight + weight;
 					}
 
 					if (node.MinRank.HasValue)
 					{
-						result.SetNode(node, n =>
-						{
-							n.BorderLeft.Add(rank, node.BorderLeft[rank]);
-							n.BorderRight.Add(rank, node.BorderRight[rank]);
-						});
+						var n = result.SetNode(node);
+						n.BorderLeft.Add(rank, node.BorderLeft[rank]);
+						n.BorderRight.Add(rank, node.BorderRight[rank]);
 					}
 				}
 			}

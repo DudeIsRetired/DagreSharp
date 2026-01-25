@@ -72,7 +72,7 @@ namespace DagreSharp.Rank
 					if (!t.HasNode(w) && Ranker.Slack(g, e) == 0)
 					{
 						t.SetNode(w);
-						t.SetEdge(v, w, null);
+						t.SetEdge(v, w);
 						dfs(w);
 					}
 				}

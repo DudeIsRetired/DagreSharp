@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace DagreSharp.GraphLibrary
 {
@@ -418,7 +417,7 @@ namespace DagreSharp.GraphLibrary
 				}
 				else
 				{
-					SetEdge(v, w, null);
+					SetEdge(v, w);
 				}
 
 				v = w;
