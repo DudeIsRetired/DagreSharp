@@ -6,7 +6,7 @@ namespace DagreSharp.GraphLibrary
 {
 	public class Algorithm
 	{
-		private delegate void OrderFunc(Node node, Func<string, IList<Node>> navigation, HashSet<string> visited, List<string> acc);
+		private delegate void OrderFunc(Node node, Func<string, ICollection<Node>> navigation, HashSet<string> visited, List<string> acc);
 
 		private class TarjanVisit
 		{
@@ -24,7 +24,7 @@ namespace DagreSharp.GraphLibrary
 		/// </summary>
 		public static List<string> Dfs(Graph g, ICollection<Node> vs, string order)
 		{
-			Func<string, List<Node>> navigation = null;
+			Func<string, ICollection<Node>> navigation = null;
 
 			if (g.IsDirected)
 			{
@@ -56,7 +56,7 @@ namespace DagreSharp.GraphLibrary
 			return acc;
 		}
 
-		private static void PostOrderDfs(Node node, Func<string, IList<Node>> navigation, HashSet<string> visited, List<string> acc)
+		private static void PostOrderDfs(Node node, Func<string, ICollection<Node>> navigation, HashSet<string> visited, List<string> acc)
 		{
 			var stack = new Stack<(string Id, bool IsDone)>();
 			stack.Push((node.Id, false));
@@ -75,13 +75,13 @@ namespace DagreSharp.GraphLibrary
 					{
 						stack.Push((Id, true));
 						visited.Add(Id);
-						ForEachRight(navigation(Id), (w, c, l) => stack.Push((w.Id, false)));
+						ForEachRight(navigation(Id).ToList(), (w, c, l) => stack.Push((w.Id, false)));
 					}
 				}
 			}
 		}
 
-		private static void PreOrderDfs(Node node, Func<string, IList<Node>> navigation, HashSet<string> visited, List<string> acc)
+		private static void PreOrderDfs(Node node, Func<string, ICollection<Node>> navigation, HashSet<string> visited, List<string> acc)
 		{
 			var stack = new Stack<string>(new[] { node.Id });
 
@@ -92,7 +92,7 @@ namespace DagreSharp.GraphLibrary
 				{
 					acc.Add(curr);
 					visited.Add(curr);
-					ForEachRight(navigation(curr), (w, c, l) => stack.Push(w.Id));
+					ForEachRight(navigation(curr).ToList(), (w, c, l) => stack.Push(w.Id));
 				}
 			}
 		}
