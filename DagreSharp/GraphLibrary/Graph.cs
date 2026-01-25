@@ -25,7 +25,7 @@ namespace DagreSharp.GraphLibrary
 
 		private readonly Dictionary<string, string> _parents = new Dictionary<string, string>();
 
-		//private readonly Dictionary<string, List<Node>> _children = new Dictionary<string, List<Node>>();
+		private readonly Dictionary<string, List<Node>> _children = new Dictionary<string, List<Node>>();
 
 		public IReadOnlyCollection<Node> Nodes { get => _nodes.Values; }
 
@@ -43,8 +43,6 @@ namespace DagreSharp.GraphLibrary
 
 		public GraphOptions Options { get; }
 
-		public Node GraphNode { get; } = new Node(GRAPH_NODE);
-
 		public Graph(bool isDirected = true, bool isMultigraph = false, bool isCompound = false)
 		{
 			IsDirected = isDirected;
@@ -54,8 +52,7 @@ namespace DagreSharp.GraphLibrary
 
 			if (IsCompound)
 			{
-				//_nodes.Add(GRAPH_NODE, GraphNode);
-				//_children.Add(GRAPH_NODE, new List<Node>());
+				_children.Add(GRAPH_NODE, new List<Node>());
 			}
 		}
 
@@ -119,12 +116,10 @@ namespace DagreSharp.GraphLibrary
 			if (IsCompound)
 			{
 				_parents[node.Id] = GRAPH_NODE;
-				//_children[node.Id] = new List<Node>();
-				//_children[GRAPH_NODE].Add(node);
-				//GraphNode.Children.Add(node);
+				_children[node.Id] = new List<Node>();
+				_children[GRAPH_NODE].Add(node);
 			}
 
-			GraphNode.Children.Add(node);
 			_inEdges[node.Id] = new List<Edge>();
 			_predecessors[node.Id] = new List<Node>();
 			_outEdges[node.Id] = new List<Edge>();
@@ -168,39 +163,23 @@ namespace DagreSharp.GraphLibrary
 		 */
 		public Graph RemoveNode(string id)
 		{
-			_nodes.TryGetValue(id, out var node);
-			
+			_nodes.Remove(id);
+
 			if (IsCompound)
 			{
 				RemoveFromParentsChildList(id);
 				_parents.Remove(id);
-				//foreach (var child in GetChildren(id).ToList())
-				foreach (var child in node.Children.ToList())
+				foreach (var child in GetChildren(id).ToList())
 				{
 					SetParent(child.Id);
 				}
-				//_children.Remove(id);
-				foreach (var item in _nodes.Values)
-				{
-					var child = item.Children.Where(c => c.Id == id).FirstOrDefault();
-					if (child != null)
-					{
-						item.Children.Remove(child);
-					}
-				}
-			}
-
-			foreach (var item in _nodes.Values)
-			{
-				item.Predecessors.Remove(node);
-				item.Successors.Remove(node);
+				_children.Remove(id);
 			}
 
 			_inEdges.RemoveAll(id, RemoveEdge);
 			_predecessors.Remove(id);
 			_outEdges.RemoveAll(id, RemoveEdge);
 			_successors.Remove(id);
-			_nodes.Remove(id);
 
 			return this;
 		}
@@ -218,11 +197,9 @@ namespace DagreSharp.GraphLibrary
 				throw new InvalidOperationException("Cannot set parent in a non-compound graph");
 			}
 
-			Node parentNode;
 			if (parent == null)
 			{
 				parent = GRAPH_NODE;
-				parentNode = GraphNode;
 			}
 			else
 			{
@@ -234,30 +211,25 @@ namespace DagreSharp.GraphLibrary
 					}
 				}
 
-				parentNode = SetNode(parent);
+				SetNode(parent);
 			}
 
 			var node = SetNode(new Node(id));
 			RemoveFromParentsChildList(id);
 			_parents[id] = parent;
-			//_children[parent].Add(node);
-			parentNode.Children.Add(node);
+			_children[parent].Add(node);
 
 			return this;
 		}
 
 		private void RemoveFromParentsChildList(string id)
 		{
-			var parentId = _parents[id];
-			var parentNode = parentId == GRAPH_NODE ? GraphNode : _nodes[_parents[id]];
-			//var parentChildren = _children[_parents[id]];
-			//var node = parentChildren.FirstOrDefault(x => x.Id == id);
-			var node = parentNode.Children.FirstOrDefault(n => n.Id == id);
+			var parentChildren = _children[_parents[id]];
+			var node = parentChildren.FirstOrDefault(x => x.Id == id);
 
 			if (node != null)
 			{
-				parentNode.Children.Remove(node);
-				//_children[_parents[id]].Remove(node);
+				_children[_parents[id]].Remove(node);
 			}
 		}
 
@@ -302,26 +274,16 @@ namespace DagreSharp.GraphLibrary
 		{
 			if (IsCompound)
 			{
-				if (id == GRAPH_NODE)
+				if (!_children.ContainsKey(id))
 				{
-					return GraphNode.Children;
+					return new List<Node>();
 				}
 
-				if (_nodes.TryGetValue(id, out Node node))
-				{
-					return node.Children;
-				}
-				//if (!_children.ContainsKey(id))
-				//{
-				//	return new List<Node>();
-				//}
-
-				//return _children[id];
+				return _children[id];
 			}
 			else if (id == GRAPH_NODE)
 			{
-				//return _nodes.Values;
-				return GraphNode.Children;
+				return _nodes.Values;
 			}
 
 			return new List<Node>();
@@ -506,8 +468,6 @@ namespace DagreSharp.GraphLibrary
 			configure?.Invoke(edge);
 
 			_edges[edge.Id] = edge;
-			toNode.Predecessors.Add(fromNode);
-			fromNode.Successors.Add(toNode);
 			_predecessors.InitOrAdd(edge.To, fromNode);
 			_successors.InitOrAdd(edge.From, toNode);
 			_inEdges[edge.To].Add(edge);
@@ -569,12 +529,7 @@ namespace DagreSharp.GraphLibrary
 			if (edge != null)
 			{
 				//var edgeId = EdgeArgsToId(edge.From, edge.To, edge.Name);
-				var fromNode = GetNode(edge.From);
-				var toNode = GetNode(edge.To);
-
 				_edges.Remove(edge.Id);
-				toNode.Predecessors.Remove(fromNode);
-				fromNode.Successors.Remove(toNode);
 				_predecessors.RemoveOrClear(edge.To, edge.From);
 				_successors.RemoveOrClear(edge.From, edge.To);
 				_inEdges[edge.To].Remove(edge);
