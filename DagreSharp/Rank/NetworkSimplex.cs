@@ -84,7 +84,7 @@ namespace DagreSharp.Rank
 
 			targetNode.Low = low;
 			targetNode.Lim = nextLim++;
-			targetNode.ParentId = parent?.Id;
+			targetNode.Parent = parent;
 
 			return nextLim;
 		}
@@ -106,11 +106,11 @@ namespace DagreSharp.Rank
 		private static void AssignCutValue(Graph t, Graph g, string child)
 		{
 			var childLab = t.GetNode(child);
-			var parentId = childLab.ParentId;
+			var parent = childLab.Parent;
 			
-			if (!string.IsNullOrEmpty(parentId))
+			if (parent != null)
 			{
-				t.GetEdge(child, parentId).CutValue = CalcCutValue(t, g, child);
+				t.GetEdge(child, parent.Id).CutValue = CalcCutValue(t, g, child);
 			}
 		}
 
@@ -121,22 +121,17 @@ namespace DagreSharp.Rank
 		public static int CalcCutValue(Graph t, Graph g, string child)
 		{
 			var childLab = t.GetNode(child);
-
-			if (string.IsNullOrEmpty(childLab.ParentId))
-			{
-				throw new InvalidOperationException("Child has no parent!");
-			}
-			var parent = childLab.ParentId;
+			var parent = childLab.Parent ?? throw new InvalidOperationException("Child has no parent!");
 
 			// True if the child is on the tail end of the edge in the directed graph
 			var childIsTail = true;
 			// The graph's view of the tree edge we're inspecting
-			var graphEdge = g.FindEdge(child, parent);
+			var graphEdge = g.FindEdge(child, parent.Id);
 
 			if (graphEdge == null)
 			{
 				childIsTail = false;
-				graphEdge = g.GetEdge(parent, child);
+				graphEdge = g.GetEdge(parent.Id, child);
 			}
 
 			// The accumulated cut value for the edge between this node and its parent
@@ -146,7 +141,7 @@ namespace DagreSharp.Rank
 				var isOutEdge = edge.From == child;
 				var other = isOutEdge ? edge.To : edge.From;
 
-				if (other != parent)
+				if (other != parent.Id)
 				{
 					var pointsToHead = isOutEdge == childIsTail;
 					var otherWeight = edge.Weight;
@@ -250,18 +245,14 @@ namespace DagreSharp.Rank
 
 		private static void UpdateRanks(Graph t, Graph g)
 		{
-			var root = t.Nodes.First(n => string.IsNullOrEmpty(g.GetNode(n.Id).ParentId));
+			var root = t.Nodes.First(n => g.GetNode(n.Id).Parent == null);
 			var vs = Algorithm.PreOrder(t, new[] { root });
 			vs = vs.GetRange(1, vs.Count - 1);
 
 			foreach (var v in vs)
 			{
-				var parentId = t.GetNode(v).ParentId;	// ?? throw new InvalidOperationException("Cannot find parent from original Graph!");
-				if (string.IsNullOrEmpty(parentId))
-				{
-					throw new InvalidOperationException("Cannot find parent from original Graph!");
-				}
-				var parent = g.GetNode(parentId);	// Note! parent from Graph g!! Had to dig for this bug
+				var parent = t.GetNode(v).Parent ?? throw new InvalidOperationException("Cannot find parent from original Graph!");
+				parent = g.GetNode(parent.Id);	// Note! parent from Graph g!! Had to dig for this bug
 				var edge = g.FindEdge(v, parent.Id);
 				var flipped = false;
 
