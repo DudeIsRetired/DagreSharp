@@ -46,15 +46,13 @@ namespace DagreSharp.Order
 			var root = CreateRootNode(g);
 			var result = new Graph(true, false, true);
 			result.Options.Root = root;
-			//result.ConfigureDefaultNode = n => g.GetNode(n.Id);
 
 			foreach (var node in nodesWithRank)
 			{
-				var parent = g.FindParent(node.Id);
-
 				if (node.Rank == rank || node.MinRank <= rank && rank <= node.MaxRank)
 				{
 					result.SetNode(node);
+					var parent = g.FindParent(node.Id);
 					result.SetParent(node.Id, string.IsNullOrEmpty(parent) ? root : parent);
 
 					// This assumes we have only short edges!
@@ -71,7 +69,7 @@ namespace DagreSharp.Order
 							result.SetNode(uNode);
 						}
 
-						var x = result.SetEdge(u, node.Id);	//, null, x => { x.Weight = e.Weight + weight; });
+						var x = result.SetEdge(u, node.Id);
 						x.Weight = e.Weight + weight;
 					}
 

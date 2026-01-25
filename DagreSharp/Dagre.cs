@@ -102,7 +102,6 @@ namespace DagreSharp
 			{
 				g.SetNode(node);
 				g.SetParent(node.Id, _graph.FindParent(node.Id));
-
 			}
 
 			foreach (var e in _graph.Edges)
@@ -233,8 +232,7 @@ namespace DagreSharp
 
 				for (int i = 0; i < layer.Count; i++)
 				{
-					var v = layer[i];
-					var node = g.GetNode(v);
+					var node = layer[i];
 					node.Order = i + orderShift;
 
 					foreach (var selfEdge in node.SelfEdges)
@@ -274,11 +272,19 @@ namespace DagreSharp
 
 			foreach (var layer in layering)
 			{
-				var maxHeight = layer.Select(l => g.GetNode(l).Height).Max();
+				var maxHeight = double.MinValue;
 
-				foreach (var l in layer)
+				foreach (var node in layer)
 				{
-					g.GetNode(l).Y = (double)prevY + maxHeight / 2;
+					if (node.Height > maxHeight)
+					{
+						maxHeight = node.Height;
+					}
+				}
+
+				foreach (var node in layer)
+				{
+					node.Y = (double)prevY + maxHeight / 2;
 				}
 
 				prevY += maxHeight + rankSep;

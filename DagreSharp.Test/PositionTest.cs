@@ -22,7 +22,7 @@ namespace DagreSharp.Test
 			g.SetNode("b", n => { n.Width = 50; n.Height = 80; n.Rank = 1; n.Order = 0; });
 			g.SetEdge("a", "b");
 
-			Dagre.Position(g);
+		Dagre.Position(g);
 
 			Assert.Equal(100+1000+80/2, g.GetNode("b").Y);
 		}

@@ -5,14 +5,14 @@ namespace DagreSharp.Order
 {
 	public static class BaryCenter
 	{
-		public static List<BaryCenterResult> Create(Graph g, IEnumerable<string> movable)
+		public static List<BaryCenterResult> Create(Graph g, IEnumerable<Node> movable)
 		{
 			var result = new List<BaryCenterResult>();
 
-			foreach (var v in movable)
+			foreach (var node in movable)
 			{
-				var inV = g.GetInEdges(v);
-				var bcr = new BaryCenterResult(v);
+				var inV = g.GetInEdges(node.Id);
+				var bcr = new BaryCenterResult(node.Id);
 
 				if (inV.Count == 0)
 				{

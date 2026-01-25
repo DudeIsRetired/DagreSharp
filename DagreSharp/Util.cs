@@ -243,41 +243,40 @@ namespace DagreSharp
 		* Given a DAG with each node assigned "rank" and "order" properties, this
 		* function will produce a matrix with the ids of each node.
 		*/
-		public static List<List<string>> BuildLayerMatrix(Graph g)
+		public static List<List<Node>> BuildLayerMatrix(Graph g)
 		{
 			var maxRank = MaxRank(g) + 1;
-			var layering = new List<List<string>>(maxRank);
+			var layering = new List<List<Node>>(maxRank);
 
 			for (int i = 0; i < maxRank; ++i)
 			{
-				layering.Add(new List<string>());
+				layering.Add(new List<Node>());
 			}
 
 			foreach (var node in g.Nodes.OrderBy(n => n.Order))
 			{
 				if (node.Rank.HasValue)
 				{
-					layering[node.Rank.Value].Add(node.Id);
+					layering[node.Rank.Value].Add(node);
 				}
 			}
 
 			return layering;
 		}
 
-		public static Dictionary<string, int> ZipObject(List<string> props, int[] values)
+		public static Dictionary<string, int> ZipObject(List<Node> props, int[] values)
 		{
 			var result = new Dictionary<string, int>();
 			
 			for (var i = 0; i < props.Count; i++)
 			{
-				result.Add(props[i], values[i]);
+				result.Add(props[i].Id, values[i]);
 			}
 
 			return result;
 		}
 
 		public static Dictionary<TKey, TValue> MapValues<TKey, TValue>(Dictionary<TKey, TValue> obj, Func<TValue, TValue> func)
-			//where TKey: notnull
 		{
 			var result = new Dictionary<TKey, TValue>();
 

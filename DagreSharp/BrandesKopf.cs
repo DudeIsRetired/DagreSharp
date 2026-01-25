@@ -45,7 +45,7 @@ namespace DagreSharp
 
 			var conflicts = type1Conflicts;
 			var xss = new Dictionary<GraphAlignment, Dictionary<string, double>>();
-			var adjustedLayering = new List<List<string>>();
+			var adjustedLayering = new List<List<Node>>();
 			Func<string, List<Node>> neighborFn;
 
 			foreach (GraphAlignment alignment in Enum.GetValues(typeof(GraphAlignment)))
@@ -110,11 +110,11 @@ namespace DagreSharp
 		* This algorithm (safely) assumes that a dummy node will only be incident on a
 		* single node in the layers being scanned.
 		*/
-		public static Dictionary<string, Dictionary<string, bool>> FindType1Conflicts(Graph g, List<List<string>> layering)
+		public static Dictionary<string, Dictionary<string, bool>> FindType1Conflicts(Graph g, List<List<Node>> layering)
 		{
 			var conflicts = new Dictionary<string, Dictionary<string, bool>>();
 
-			List<string> VisitLayer(List<string> previousLayer, List<string> layer)
+			List<Node> VisitLayer(List<Node> previousLayer, List<Node> layer)
 			{
 				// last visited node in the previous layer that is incident on an inner segment.
 				var k0 = 0;
@@ -126,21 +126,21 @@ namespace DagreSharp
 				for (int i = 0; i < layer.Count; i++)
 				{
 					var v = layer[i];
-					var w = FindOtherInnerSegmentNode(g, v);
+					var w = FindOtherInnerSegmentNode(g, v.Id);
 					var k1 = w != null ? w.Order : prevLayerLength;
 
 					if (w != null || v == lastNode)
 					{
 						foreach (var scanNode in layer.GetRange(scanPos, i + 1 - scanPos))
 						{
-							foreach (var pred in g.GetPredecessors(scanNode))
+							foreach (var pred in g.GetPredecessors(scanNode.Id))
 							{
 								var uPos = pred.Order;
 
 								if ((uPos < k0 || k1 < uPos) &&
-									!(pred.DummyType != DummyType.None && g.GetNode(scanNode).DummyType != DummyType.None))
+									!(pred.DummyType != DummyType.None && scanNode.DummyType != DummyType.None))
 								{
-									AddConflict(conflicts, pred.Id, scanNode);
+									AddConflict(conflicts, pred.Id, scanNode.Id);
 								}
 							}
 						}
@@ -192,31 +192,31 @@ namespace DagreSharp
 			else conflictsV[w] = true;
 		}
 
-		public static Dictionary<string, Dictionary<string, bool>> FindType2Conflicts(Graph g, List<List<string>> layering)
+		public static Dictionary<string, Dictionary<string, bool>> FindType2Conflicts(Graph g, List<List<Node>> layering)
 		{
 			var conflicts = new Dictionary<string, Dictionary<string, bool>>();
 
-			void Scan(List<string> south, int southPos, int southEnd, int prevNorthBorder, int nextNorthBorder)
+			void Scan(List<Node> south, int southPos, int southEnd, int prevNorthBorder, int nextNorthBorder)
 			{
 				var range = Util.Range(southPos, southEnd);
 				foreach (var i in range)
 				{
 					var v = south[i];
 
-					if (g.GetNode(v).DummyType != DummyType.None)
+					if (v.DummyType != DummyType.None)
 					{
-						foreach (var uNode in g.GetPredecessors(v))
+						foreach (var uNode in g.GetPredecessors(v.Id))
 						{
 							if (uNode.DummyType != DummyType.None && (uNode.Order < prevNorthBorder || uNode.Order > nextNorthBorder))
 							{
-								AddConflict(conflicts, uNode.Id, v);
+								AddConflict(conflicts, uNode.Id, v.Id);
 							}
 						}
 					}
 				}
 			}
 
-			List<string> VisitLayer(List<string> north, List<string> south)
+			List<Node> VisitLayer(List<Node> north, List<Node> south)
 			{
 				var prevNorthPos = -1;
 				var nextNorthPos = 0;
@@ -225,9 +225,9 @@ namespace DagreSharp
 				for (int southLookahead = 0; southLookahead < south.Count; southLookahead++)
 				{
 					var v = south[southLookahead];
-					if (g.GetNode(v).DummyType == DummyType.Border)
+					if (v.DummyType == DummyType.Border)
 					{
-						var predecessors = g.GetPredecessors(v);
+						var predecessors = g.GetPredecessors(v.Id);
 						if (predecessors.Count > 0)
 						{
 							nextNorthPos = predecessors.First().Order;
@@ -265,7 +265,7 @@ namespace DagreSharp
 		* we're trying to form a block with, we also ignore that possibility - our
 		* blocks would be split in that scenario.
 		*/
-		public static VerticalAlignment VerticalAlign(List<List<string>> layering, Dictionary<string, Dictionary<string, bool>> conflicts, Func<string, List<Node>> neighborFn)
+		public static VerticalAlignment VerticalAlign(List<List<Node>> layering, Dictionary<string, Dictionary<string, bool>> conflicts, Func<string, List<Node>> neighborFn)
 		{
 			var root = new Dictionary<string, string>();
 			var align = new Dictionary<string, string>();
@@ -278,7 +278,7 @@ namespace DagreSharp
 			{
 				for (var order = 0; order < layer.Count; order++)
 				{
-					var v = layer[order];
+					var v = layer[order].Id;
 					root[v] = v;
 					align[v] = v;
 					pos[v] = order;
@@ -288,8 +288,9 @@ namespace DagreSharp
 			foreach (var layer in layering)
 			{
 				var prevIdx = -1;
-				foreach (var v in layer)
+				foreach (var nv in layer)
 				{
+					var v = nv.Id;
 					var ws = neighborFn(v);
 					if (ws.Count > 0)
 					{
@@ -323,7 +324,7 @@ namespace DagreSharp
 			return conflicts.ContainsKey(v) && conflicts[v].ContainsKey(w);
 		}
 
-		public static Dictionary<string, double> HorizontalCompaction(Graph g, List<List<string>> layering, Dictionary<string, string> root, Dictionary<string, string> align, bool reverseSep = false)
+		public static Dictionary<string, double> HorizontalCompaction(Graph g, List<List<Node>> layering, Dictionary<string, string> root, Dictionary<string, string> align, bool reverseSep = false)
 		{
 			// This portion of the algorithm differs from BK due to a number of problems.
 			// Instead of their algorithm we construct a new block graph and do two
@@ -362,7 +363,7 @@ namespace DagreSharp
 			}
 
 			// First pass, assign smallest coordinates
-			void pass1(Node node)
+			void FirstPass(Node node)
 			{
 				var acc = double.MinValue;
 
@@ -387,7 +388,7 @@ namespace DagreSharp
 			}
 
 			// Second pass, assign greatest coordinates
-			void pass2(Node node)
+			void SecondPass(Node node)
 			{
 				var min = double.MaxValue;
 
@@ -407,8 +408,8 @@ namespace DagreSharp
 				}
 			}
 
-			Iterate(pass1, blockG.GetPredecessors);
-			Iterate(pass2, blockG.GetSuccessors);
+			Iterate(FirstPass, blockG.GetPredecessors);
+			Iterate(SecondPass, blockG.GetSuccessors);
 
 			// Assign x coordinates to all nodes
 			foreach (var v in align.Keys)
@@ -419,7 +420,7 @@ namespace DagreSharp
 			return xs;
 		}
 
-		private static Graph BuildBlockGraph(Graph g, List<List<string>> layering, Dictionary<string, string> root, bool reverseSep)
+		private static Graph BuildBlockGraph(Graph g, List<List<Node>> layering, Dictionary<string, string> root, bool reverseSep)
 		{
 			var blockGraph = new Graph();
 			var graphLabel = g.Options;
@@ -429,8 +430,9 @@ namespace DagreSharp
 			{
 				string u = null;
 
-				foreach (var v in layer)
+				foreach (var nv in layer)
 				{
+					var v = nv.Id;
 					var vRoot = root[v];
 					blockGraph.SetNode(new Node(vRoot));
 
@@ -441,7 +443,7 @@ namespace DagreSharp
 						var prevMax = prevMaxEdge == null ? 0 : prevMaxEdge.NodeX;
 						var value = Math.Max(sepFn(g, v, u), prevMax);
 
-						var e = blockGraph.SetEdge(uRoot, vRoot);	//, null, e => { e.NodeX = value; });
+						var e = blockGraph.SetEdge(uRoot, vRoot);
 						e.NodeX = value;
 					}
 

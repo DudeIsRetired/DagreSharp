@@ -19,7 +19,12 @@ namespace DagreSharp.Test.Order
 			g.SetEdge("a1", "b1");
 			g.SetEdge("a2", "b2");
 
-			Assert.Equal(0, CrossCounter.CrossCount(g, [["a1", "a2"], ["b1", "b2"]]));
+			var a1 = g.GetNode("a1");
+			var a2 = g.GetNode("a2");
+			var b1 = g.GetNode("b1");
+			var b2 = g.GetNode("b2");
+
+			Assert.Equal(0, CrossCounter.CrossCount(g, [[a1, a2], [b1, b2]]));
 		}
 
 		[Fact]
@@ -28,7 +33,12 @@ namespace DagreSharp.Test.Order
 			g.SetEdge("a1", "b1");
 			g.SetEdge("a2", "b2");
 
-			Assert.Equal(1, CrossCounter.CrossCount(g, [["a1", "a2"], ["b2", "b1"]]));
+			var a1 = g.GetNode("a1");
+			var a2 = g.GetNode("a2");
+			var b1 = g.GetNode("b1");
+			var b2 = g.GetNode("b2");
+
+			Assert.Equal(1, CrossCounter.CrossCount(g, [[a1, a2], [b2, b1]]));
 		}
 
 		[Fact]
@@ -37,7 +47,12 @@ namespace DagreSharp.Test.Order
 			g.SetEdge("a1", "b1", null, e => { e.Weight = 2; });
 			g.SetEdge("a2", "b2", null, e => { e.Weight = 3; });
 
-			Assert.Equal(6, CrossCounter.CrossCount(g, [["a1", "a2"], ["b2", "b1"]]));
+			var a1 = g.GetNode("a1");
+			var a2 = g.GetNode("a2");
+			var b1 = g.GetNode("b1");
+			var b2 = g.GetNode("b2");
+
+			Assert.Equal(6, CrossCounter.CrossCount(g, [[a1, a2], [b2, b1]]));
 		}
 
 		[Fact]
@@ -46,7 +61,14 @@ namespace DagreSharp.Test.Order
 			g.SetPath(["a1", "b1", "c1"]);
 			g.SetPath(["a2", "b2", "c2"]);
 
-			Assert.Equal(2, CrossCounter.CrossCount(g, [["a1", "a2"], ["b2", "b1"], ["c1", "c2"]]));
+			var a1 = g.GetNode("a1");
+			var a2 = g.GetNode("a2");
+			var b1 = g.GetNode("b1");
+			var b2 = g.GetNode("b2");
+			var c1 = g.GetNode("c1");
+			var c2 = g.GetNode("c2");
+
+			Assert.Equal(2, CrossCounter.CrossCount(g, [[a1, a2], [b2, b1], [c1, c2]]));
 		}
 
 		[Fact]
@@ -57,8 +79,16 @@ namespace DagreSharp.Test.Order
 			g.SetPath(["a", "f", "i"]);
 			g.SetEdge("a", "e");
 
-			Assert.Equal(1, CrossCounter.CrossCount(g, [["a", "d"], ["b", "e", "f"], ["c", "i"]]));
-			Assert.Equal(0, CrossCounter.CrossCount(g, [["d", "a"], ["e", "b", "f"], ["c", "i"]]));
+			var a = g.GetNode("a");
+			var b = g.GetNode("b");
+			var c = g.GetNode("c");
+			var d = g.GetNode("d");
+			var e = g.GetNode("e");
+			var f = g.GetNode("f");
+			var i = g.GetNode("i");
+
+			Assert.Equal(1, CrossCounter.CrossCount(g, [[a, d], [b, e, f], [c, i]]));
+			Assert.Equal(0, CrossCounter.CrossCount(g, [[d, a], [e, b, f], [c, i]]));
 		}
 	}
 }

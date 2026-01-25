@@ -47,7 +47,7 @@ namespace DagreSharp.Order
 
 		public static BaryCenterResult Sort(Graph g, string v, Graph cg, bool biasRight = false)
 		{
-			var movable = g.GetChildren(v).Select(c => c.Id);
+			var movable = g.GetChildren(v);
 			var node = g.FindNode(v);
 			var bl = node?.BorderLeft.Values.FirstOrDefault();
 			var br = node?.BorderRight.Values.FirstOrDefault();
@@ -55,7 +55,7 @@ namespace DagreSharp.Order
 
 			if (bl != null)
 			{
-				movable = movable.Where(w => w != bl && w != br).ToList();
+				movable = movable.Where(w => w.Id != bl && w.Id != br).ToArray();
 			}
 
 			var barycenters = BaryCenter.Create(g, movable);

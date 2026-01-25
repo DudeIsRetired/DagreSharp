@@ -154,18 +154,18 @@ namespace DagreSharp.Test
 		public void BuildLayerMatrixCreatesAMatrixBasedOnRankAndOrderOfNodesInTheGraph()
 		{
 			var g = new Graph();
-			g.SetNode("a", n => { n.Rank = 0; n.Order = 0; });
-			g.SetNode("b", n => { n.Rank = 0; n.Order = 1; });
-			g.SetNode("c", n => { n.Rank = 1; n.Order = 0; });
-			g.SetNode("d", n => { n.Rank = 1; n.Order = 1; });
-			g.SetNode("e", n => { n.Rank = 2; n.Order = 0; });
+			var a = g.SetNode("a", n => { n.Rank = 0; n.Order = 0; });
+			var b = g.SetNode("b", n => { n.Rank = 0; n.Order = 1; });
+			var c = g.SetNode("c", n => { n.Rank = 1; n.Order = 0; });
+			var d = g.SetNode("d", n => { n.Rank = 1; n.Order = 1; });
+			var e = g.SetNode("e", n => { n.Rank = 2; n.Order = 0; });
 
 			var matrix = Util.BuildLayerMatrix(g);
 
 			Assert.Equal(3, matrix.Count);
-			Assert.Contains(matrix, m => m.Contains("a") && m.Contains("b"));
-			Assert.Contains(matrix, m => m.Contains("c") && m.Contains("d"));
-			Assert.Contains(matrix, m => m.Contains("e"));
+			Assert.Contains(matrix, m => m.Contains(a) && m.Contains(b));
+			Assert.Contains(matrix, m => m.Contains(c) && m.Contains(d));
+			Assert.Contains(matrix, m => m.Contains(e));
 		}
 
 		[Fact]

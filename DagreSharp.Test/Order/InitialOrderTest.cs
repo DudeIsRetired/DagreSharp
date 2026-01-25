@@ -10,11 +10,11 @@ namespace DagreSharp.Test.Order
 		[Fact]
 		public void AssignsNonOverlappingOrdersForEachRankInATree()
 		{
-			g.SetNode("a", n => { n.Rank = 0; });
-			g.SetNode("b", n => { n.Rank = 1; });
-			g.SetNode("c", n => { n.Rank = 2; });
-			g.SetNode("d", n => { n.Rank = 2; });
-			g.SetNode("e", n => { n.Rank = 1; });
+			var a = g.SetNode("a", n => { n.Rank = 0; });
+			var b = g.SetNode("b", n => { n.Rank = 1; });
+			var c = g.SetNode("c", n => { n.Rank = 2; });
+			var d = g.SetNode("d", n => { n.Rank = 2; });
+			var e = g.SetNode("e", n => { n.Rank = 1; });
 
 			g.SetPath(["a", "b", "c"]);
 			g.SetEdge("b", "d");
@@ -22,49 +22,49 @@ namespace DagreSharp.Test.Order
 
 			var layering = InitialOrder.Run(g);
 
-			Assert.Equal(["a"], layering[0]);
+			Assert.Equal([a], layering[0]);
 
 			var layering1 = layering[1];
 			layering1.Sort();
-			Assert.Equal(["b", "e"], layering1);
+			Assert.Equal([b, e], layering1);
 
 			var layering2 = layering[2];
 			layering2.Sort();
-			Assert.Equal(["c", "d"], layering2);
+			Assert.Equal([c, d], layering2);
 		}
 
 		[Fact]
 		public void AssignsNonOverlappingOrdersForEachRankInADAG()
 		{
-			g.SetNode("a", n => { n.Rank = 0; });
-			g.SetNode("b", n => { n.Rank = 1; });
-			g.SetNode("c", n => { n.Rank = 1; });
-			g.SetNode("d", n => { n.Rank = 2; });
+			var a = g.SetNode("a", n => { n.Rank = 0; });
+			var b = g.SetNode("b", n => { n.Rank = 1; });
+			var c = g.SetNode("c", n => { n.Rank = 1; });
+			var d = g.SetNode("d", n => { n.Rank = 2; });
 
 			g.SetPath(["a", "b", "d"]);
 			g.SetPath(["a", "c", "d"]);
 
 			var layering = InitialOrder.Run(g);
 
-			Assert.Equal(["a"], layering[0]);
+			Assert.Equal([a], layering[0]);
 
 			var layering1 = layering[1];
 			layering1.Sort();
-			Assert.Equal(["b", "c"], layering1);
+			Assert.Equal([b, c], layering1);
 
-			Assert.Equal(["d"], layering[2]);
+			Assert.Equal([d], layering[2]);
 		}
 
 		[Fact]
 		public void DoesNotAssignAnOrderToSubgraphNodes()
 		{
-			g.SetNode("a", n => { n.Rank = 0; });
+			var a = g.SetNode("a", n => { n.Rank = 0; });
 			g.SetNode("sg1");
 			g.SetParent("a", "sg1");
 
 			var layering = InitialOrder.Run(g);
 
-			Assert.Equal([["a"]], layering);
+			Assert.Equal([[a]], layering);
 		}
 	}
 }

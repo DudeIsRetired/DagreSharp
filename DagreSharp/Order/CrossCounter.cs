@@ -22,7 +22,7 @@ namespace DagreSharp.Order
 		*
 		* This algorithm is derived from Barth, et al., "Bilayer Cross Counting."
 		*/
-		public static int CrossCount(Graph g, List<List<string>> layering)
+		public static int CrossCount(Graph g, List<List<Node>> layering)
 		{
 			var cc = 0;
 			for (var i = 1; i < layering.Count; ++i)
@@ -39,7 +39,7 @@ namespace DagreSharp.Order
 			public int Weight { get; set; }
 		}
 
-		private static int TwoLayerCrossCount(Graph g, List<string> northLayer, List<string> southLayer)
+		private static int TwoLayerCrossCount(Graph g, List<Node> northLayer, List<Node> southLayer)
 		{
 			// Sort all of the edges between the north and south layers by their position
 			// in the north layer and then the south. Map these edges to the position of
@@ -49,7 +49,7 @@ namespace DagreSharp.Order
 
 			var southEntries = northLayer.SelectMany(nl =>
 			{
-				var outEdges = g.GetOutEdges(nl).Select(e =>
+				var outEdges = g.GetOutEdges(nl.Id).Select(e =>
 				{
 					return new LayerEntry { Pos = southPos[e.To], Weight = e.Weight };
 				}).ToList();

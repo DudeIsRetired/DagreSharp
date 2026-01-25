@@ -43,16 +43,32 @@ namespace DagreSharp.Order
 		* Returns a layering matrix with an array per layer and each layer sorted by
 		* the order of its nodes.
 		*/
-		public static List<List<string>> Run(Graph g)
+		public static List<List<Node>> Run(Graph g)
 		{
 			var visited = new HashSet<string>();
-			var simpleNodes = g.Nodes.Where(n => g.GetChildren(n.Id).Count == 0).ToList();
-			var maxRank = Util.MaxRank(simpleNodes);
-			List<List<string>> layers = new List<List<string>>();
+			var simpleNodes = new List<Node>();
+			var maxRank = int.MinValue;
 
-			foreach (var i in Util.Range(maxRank + 1))
+			foreach (var node in g.Nodes)
 			{
-				layers.Add(new List<string>());
+				if (g.GetChildren(node.Id).Count != 0)
+				{
+					continue;
+				}
+
+				if (node.Rank.HasValue && node.Rank.Value > maxRank)
+				{
+					maxRank = node.Rank.Value;
+				}
+
+				simpleNodes.Add(node);
+			}
+
+			List<List<Node>> layers = new List<List<Node>>();
+
+			foreach (var _ in Enumerable.Range(0, maxRank + 1))
+			{
+				layers.Add(new List<Node>());
 			}
 
 			void DepthFirstSearch(Node node)
@@ -66,7 +82,7 @@ namespace DagreSharp.Order
 
 				if (node.Rank.HasValue)
 				{
-					layers[node.Rank.Value].Add(node.Id);
+					layers[node.Rank.Value].Add(node);
 				}
 
 				foreach (var succ in g.GetSuccessors(node.Id))
