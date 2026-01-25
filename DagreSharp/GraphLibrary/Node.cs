@@ -33,7 +33,7 @@ namespace DagreSharp.GraphLibrary
 
 		public int Lim { get; set; }
 
-		public Node Parent { get; set; }
+		public string ParentId { get; set; }	// NetworkSimplex
 
 		public int? MinRank { get; set; }
 
@@ -55,11 +55,9 @@ namespace DagreSharp.GraphLibrary
 
 		public Dictionary<int, string> BorderRight { get; } = new Dictionary<int, string>();
 
+		public Node Parent { get; set; }
+
 		public List<Node> Children { get; } = new List<Node>();
-
-		public List<Node> Predecessors { get; } = new List<Node>();
-
-		public List<Node> Successors { get; } = new List<Node>();
 
 		public Node(string id)
 		{
@@ -87,7 +85,7 @@ namespace DagreSharp.GraphLibrary
 				BorderBottom = BorderBottom,
 				Low = Low,
 				Lim = Lim,
-				Parent = Parent,
+				ParentId = ParentId,
 				DummyEdge = DummyEdge,
 				MinRank = MinRank,
 				MaxRank = MaxRank,

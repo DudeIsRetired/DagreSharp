@@ -279,17 +279,17 @@ namespace DagreSharp.Test.Rank
 			Assert.Equal([1, 2, 3, 4, 5], limValues);
 			Assert.True(a.Low == 1 && a.Lim == 5);
 
-			Assert.Equal("a", b.Parent.Id);
+			Assert.Equal("a", b.ParentId);
 			Assert.True(b.Lim < a.Lim);
 
-			Assert.Equal("a", c.Parent.Id);
+			Assert.Equal("a", c.ParentId);
 			Assert.True(c.Lim < a.Lim);
 			Assert.True(c.Lim != b.Lim);
 
-			Assert.Equal("c", d.Parent.Id);
+			Assert.Equal("c", d.ParentId);
 			Assert.True(d.Lim < c.Lim);
 
-			Assert.Equal("c", e.Parent.Id);
+			Assert.Equal("c", e.ParentId);
 			Assert.True(e.Lim < c.Lim);
 			Assert.True(e.Lim != d.Lim);
 		}

@@ -23,10 +23,6 @@ namespace DagreSharp.GraphLibrary
 
 		private readonly Dictionary<string, List<Node>> _successors = new Dictionary<string, List<Node>>();
 
-		private readonly Dictionary<string, string> _parents = new Dictionary<string, string>();
-
-		//private readonly Dictionary<string, List<Node>> _children = new Dictionary<string, List<Node>>();
-
 		public IReadOnlyCollection<Node> Nodes { get => _nodes.Values; }
 
 		public IReadOnlyCollection<Edge> Edges { get => _edges.Values; }
@@ -118,7 +114,8 @@ namespace DagreSharp.GraphLibrary
 
 			if (IsCompound)
 			{
-				_parents[node.Id] = GRAPH_NODE;
+				node.Parent = GraphNode;
+				//_parents[node.Id] = GRAPH_NODE;
 				//_children[node.Id] = new List<Node>();
 				//_children[GRAPH_NODE].Add(node);
 				//GraphNode.Children.Add(node);
@@ -172,8 +169,8 @@ namespace DagreSharp.GraphLibrary
 			
 			if (IsCompound)
 			{
-				RemoveFromParentsChildList(id);
-				_parents.Remove(id);
+				RemoveFromParentsChildList(node);
+				//_parents.Remove(id);
 				//foreach (var child in GetChildren(id).ToList())
 				foreach (var child in node.Children.ToList())
 				{
@@ -188,12 +185,6 @@ namespace DagreSharp.GraphLibrary
 						item.Children.Remove(child);
 					}
 				}
-			}
-
-			foreach (var item in _nodes.Values)
-			{
-				item.Predecessors.Remove(node);
-				item.Successors.Remove(node);
 			}
 
 			_inEdges.RemoveAll(id, RemoveEdge);
@@ -238,27 +229,30 @@ namespace DagreSharp.GraphLibrary
 			}
 
 			var node = SetNode(new Node(id));
-			RemoveFromParentsChildList(id);
-			_parents[id] = parent;
+			RemoveFromParentsChildList(node);
+			node.Parent = parentNode;
+			//_parents[id] = parent;
 			//_children[parent].Add(node);
 			parentNode.Children.Add(node);
 
 			return this;
 		}
 
-		private void RemoveFromParentsChildList(string id)
+		private void RemoveFromParentsChildList(Node node)
 		{
-			var parentId = _parents[id];
-			var parentNode = parentId == GRAPH_NODE ? GraphNode : _nodes[_parents[id]];
-			//var parentChildren = _children[_parents[id]];
-			//var node = parentChildren.FirstOrDefault(x => x.Id == id);
-			var node = parentNode.Children.FirstOrDefault(n => n.Id == id);
+			var parent = node.Parent;
+			parent.Children.Remove(node);
+			//var parentId = _parents[id];
+			//var parentNode = parentId == GRAPH_NODE ? GraphNode : _nodes[_parents[id]];
+			////var parentChildren = _children[_parents[id]];
+			////var node = parentChildren.FirstOrDefault(x => x.Id == id);
+			//var node = parentNode.Children.FirstOrDefault(n => n.Id == id);
 
-			if (node != null)
-			{
-				parentNode.Children.Remove(node);
-				//_children[_parents[id]].Remove(node);
-			}
+			//if (node != null)
+			//{
+			//	parentNode.Children.Remove(node);
+			//	//_children[_parents[id]].Remove(node);
+			//}
 		}
 
 		/**
@@ -269,11 +263,13 @@ namespace DagreSharp.GraphLibrary
 		{
 			if (IsCompound)
 			{
-				if (_parents.TryGetValue(id, out string parent))
+				//if (_parents.TryGetValue(id, out string parent))
+				if (_nodes.TryGetValue(id, out var node))
 				{
-					if (parent != GRAPH_NODE)
+					//if (parent != GRAPH_NODE)
+					if (node.Parent != null && node.Parent != GraphNode)
 					{
-						return parent;
+						return node.Parent.Id;
 					}
 				}
 			}
@@ -285,9 +281,13 @@ namespace DagreSharp.GraphLibrary
 		{
 			if (IsCompound)
 			{
-				if (_parents.TryGetValue(id, out string parent))
+				if (_nodes.TryGetValue(id, out var node))
 				{
-					return parent != GRAPH_NODE;
+					//return parent != GRAPH_NODE;
+					if (node.Parent != null && node.Parent != GraphNode)
+					{
+						return true;
+					}
 				}
 			}
 
@@ -506,8 +506,6 @@ namespace DagreSharp.GraphLibrary
 			configure?.Invoke(edge);
 
 			_edges[edge.Id] = edge;
-			toNode.Predecessors.Add(fromNode);
-			fromNode.Successors.Add(toNode);
 			_predecessors.InitOrAdd(edge.To, fromNode);
 			_successors.InitOrAdd(edge.From, toNode);
 			_inEdges[edge.To].Add(edge);
@@ -569,12 +567,7 @@ namespace DagreSharp.GraphLibrary
 			if (edge != null)
 			{
 				//var edgeId = EdgeArgsToId(edge.From, edge.To, edge.Name);
-				var fromNode = GetNode(edge.From);
-				var toNode = GetNode(edge.To);
-
 				_edges.Remove(edge.Id);
-				toNode.Predecessors.Remove(fromNode);
-				fromNode.Successors.Remove(toNode);
 				_predecessors.RemoveOrClear(edge.To, edge.From);
 				_successors.RemoveOrClear(edge.From, edge.To);
 				_inEdges[edge.To].Remove(edge);
