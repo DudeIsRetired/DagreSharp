@@ -1,6 +1,5 @@
 ﻿using DagreSharp.GraphLibrary;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace DagreSharp.Order
 {
@@ -44,18 +43,28 @@ namespace DagreSharp.Order
 			// Sort all of the edges between the north and south layers by their position
 			// in the north layer and then the south. Map these edges to the position of
 			// their head in the south layer.
-			var southValues = southLayer.Select((s, index) => index).ToArray();
-			var southPos = Util.ZipObject(southLayer, southValues);
+			var southPos = new Dictionary<string, int>();
 
-			var southEntries = northLayer.SelectMany(nl =>
+			for (int i = 0; i < southLayer.Count; i++)
 			{
-				var outEdges = g.GetOutEdges(nl.Id).Select(e =>
+				var s = southLayer[i];
+				southPos.Add(s.Id, i);
+			}
+
+			var southEntries = new List<LayerEntry>();
+
+			foreach (var entry in northLayer)
+			{
+				var edges = new List<LayerEntry>();
+				
+				foreach (var edge in g.GetOutEdges(entry.Id))
 				{
-					return new LayerEntry { Pos = southPos[e.To], Weight = e.Weight };
-				}).ToList();
-				outEdges.Sort(Comparer<LayerEntry>.Create((a, b) => a.Pos - b.Pos));
-				return outEdges;
-			}).ToList();
+					edges.Add(new LayerEntry { Pos = southPos[edge.To], Weight = edge.Weight });
+				}
+
+				edges.Sort(Comparer<LayerEntry>.Create((a, b) => a.Pos - b.Pos));
+				southEntries.AddRange(edges);
+			}
 
 			// Build the accumulator tree
 			var firstIndex = 1;
@@ -90,8 +99,7 @@ namespace DagreSharp.Order
 					tree[index] += entry.Weight;
 				}
 				cc += entry.Weight * weightSum;
-			}
-			;
+			};
 
 			return cc;
 		}
